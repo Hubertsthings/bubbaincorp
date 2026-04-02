@@ -1,0 +1,222 @@
+
+
+body{
+    margin:0;
+    padding-top:60px;
+    font-family:Arial;
+}
+
+/* NAVBAR */
+
+.navbar{
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:60px;
+    background:#000000;
+    color:white;
+
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+
+    padding:0 20px;
+    box-sizing:border-box;
+
+    z-index:9999;
+}
+
+.nav-left{
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+
+.home img{
+    height:50px;
+    width:auto;
+}
+
+.site-name{
+    font-size:20px;
+    font-weight:bold;
+}
+
+
+
+
+.nav-right {
+    display: flex;
+    align-items: center;
+}
+
+/* button styling */
+.nav-button {
+    background: #002faf;
+    color: white;
+    padding: 8px 14px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 14px;
+    margin-left: 10px; /* spacing from edge */
+    transition: 0.2s;
+}
+
+
+
+
+
+
+/* Hide animation */
+
+.hidden{
+    transform:translateY(-100%);
+    transition:transform 0.3s;
+}
+
+
+
+
+
+
+/* Toggle button */
+
+#toggleBtn{
+    position:fixed;
+    top:10px;
+    right:10px;
+
+    background:#000000;
+    border:none;
+    color:white;
+    padding:8px 14px;
+    cursor:pointer;
+    border-radius:5px;
+
+    z-index:9930;
+}
+
+/* Gme iframe */
+
+.lesson-frame{
+    width:100%;
+    height:calc(100vh - 60px);
+    border:none;
+}
+
+
+
+
+
+
+
+
+/* button for apps */
+
+.row-seperator {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); /* min width 150px, auto-fill horizontally */
+    gap: 20px;             /* space between buttons */
+    justify-content: center; /* center the grid */
+    padding: 0 10px;
+    margin-bottom: 20px;   /* space to next section */
+    box-sizing: border-box;
+}
+
+.mathbutton {
+    display: block;
+    width: 100%;          /* take full width of grid cell */
+    max-width: 200px;     /* optional limit */
+    height: 40px;
+    line-height: 40px;     /* vertical centering */
+    text-align: center;
+    background: #d5d5d5;
+    color: rgb(22, 22, 22);
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 15px;
+    transition: 0.2s;
+    box-sizing: border-box; /* include padding in width */
+}
+
+.mathbutton:hover {
+    background: #2300a0;
+    transform: scale(1.05);
+}
+
+
+
+
+
+    /* end */
+
+
+.line
+{height:3px;
+    border-width:0;
+    color:gray;
+    background-color:gray
+}
+
+
+.mascot {
+    display: flex;
+    flex-direction: column; /* stack image and button vertically */
+    align-items: flex-end;  /* right-align */
+    margin-bottom: 15px;
+}
+
+.mascot img {
+    width: 200px; /* or any responsive width */
+    max-width: 100%;
+    height: auto;
+}
+
+.mascotbutton {
+    display: block;
+    width: 200px;              /* takes the width of the parent (.mascot) */
+    text-align: center;       /* centers the text */
+    background: #002faf;
+    color: white;
+    border-radius: 8px;
+    padding: 8px 0;           /* vertical padding */
+    margin-top: 10px;         /* spacing under image */
+    text-decoration: none;
+    font-size: 15px;
+    transition: 0.2s;
+}
+
+.mascotbutton:hover {
+    background: #2300a0;
+    transform: scale(1.05);
+}
+
+ 
+.bgm {
+    background-image: url("images/bgimg.jpg");
+    background-size: cover;        /* fills the area nicely */
+    background-position: center;   /* keeps it centered */
+    background-repeat: no-repeat;
+
+    padding: 20px; /* space so content isn't cramped */
+}
+
+
+
+/* SITE SETTINGS */
+
+
+html, body {
+    background-color: #000000;
+    color: white;
+}
+
+
+/* End  */
+.linev2
+{height:5px;
+    border-width:0;
+    color:rgb(211, 211, 211);
+    background-color:rgb(197, 197, 197);
+}
