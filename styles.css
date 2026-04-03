@@ -227,16 +227,4 @@ html, body {
 
 /* jumposcare */
 
-#fadeImage {
-  position: fixed;       /* Stays on top of everything */
-  top: 0;
-  left: 0;
-  width: 100vw;          /* Full viewport width */
-  height: 100vh;         /* Full viewport height */
-  object-fit: cover;     /* Keep aspect ratio */
-  opacity: 0;            /* Start invisible */
-  transition: opacity 2.5s ease; /* Smooth fade */
-  z-index: 9999;         /* On top of everything */
-  pointer-events: none;  /* Clicks pass through */
-}
 
