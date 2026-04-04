@@ -1,44 +1,42 @@
-<!-----CHANGE APP LOCATION AT IFRAME and name of this page.--->
-
 <!DOCTYPE html>
 <html>
-
 <head>
 
- <link rel="icon" href="/images/favicon.png" type="image/png">
-
 <meta charset="UTF-8">
-<title>Bubba incorporated™</title>
+
 <link rel="stylesheet" href="/styles.css">
+
+<title>Bubba Incorporated</title>
+
+<link rel="icon" type="images/png" href="/images/favicon.png">
+
+<meta name="description" content="Bubba Inc™ provides a wide selection of educational 
+lessons. These include, Algebra, English, Government, and Science.">
+
+
+
 </head>
-
 <body>
-<div class="navbar" id="navbar">
-    <div class="nav-left">
-        <a href="/index.html" class="home">
-            <img src="/navbaricon.jpg" alt="Home">
-        </a>
-        <span class="site-name">Bubba incorporated™</span>
-    </div>
 
-    <!-- cloak button -->
-<div class="nav-right">
-<button href="/info.html" class="nav-button" onclick="cloak()">cloak</button>
-</div>
-</div>
-<!-- SCRIPT FOR BUTTON -->
-<script> 
-function cloak() { document.title = "New Tab";
-let icon = 
-document.querySelector("link[rel~='icon']"
-);
-icon.href = "/images/psicon.png";
-}
+<!-- launch navbar -->
+<div id="navbar-container"></div>
+<script>
+  // Make sure path is correct relative to this page
+  fetch("/navbar.html")  
+    .then(response => response.text())
+    .then(data => {
+      document.getElementById("navbar-container").innerHTML = data;
+    })
+    .catch(err => console.error("Navbar failed to load:", err));
 </script>
-<!---end of nav bar-->
+
+<script src="/script.js"></script>
+<script src="/panickey.js"></script
+
+<!-- end of nav bar and stuff-->
 
 
-<script src="/panickey.js"></script>
+
 
 
 <!-- replace EXAMPLE.HTML with app in 'Apps' folder -->
