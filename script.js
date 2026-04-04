@@ -119,8 +119,10 @@ document.addEventListener("DOMContentLoaded", () => {
           previewIframe.src = previewData[appClass].url;
           previewText.textContent = previewData[appClass].text;
 
+const boxHeight = previewBox.offsetHeight;
+
           previewBox.style.left = (e.pageX + 10) + "px";
-          previewBox.style.top = (e.pageY + 10) + "px";
+          previewBox.style.top = (e.pageY - boxHeight - 10) + "px";
 
           previewBox.classList.add("show");
         }
