@@ -63,7 +63,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // Map each appClass to its preview content
   const previewData = {
     dta: {
-      img: "Apps/DTA.html",
+      img: "https://drive.google.com/file/d/1ouREIeNEOg6TncYJoebDvRldr5VFy05h/preview",
       text: "similar to g†@ "
     },
     raldi: {
