@@ -227,8 +227,7 @@ html, body {
 
 
 
-
-/* Button styling (your existing mathbutton styles still apply) */
+/* Buttons (your existing mathbutton CSS still works) */
 .mathbutton {
   display: block;
   width: 150px;
@@ -236,7 +235,7 @@ html, body {
   background: #d5d5d5;
   color: rgb(22, 22, 22);
   border-radius: 8px;
-  padding: 8px 0;
+  padding: 0px 0;
   margin: 5px;
   text-decoration: none;
   font-size: 15px;
@@ -248,7 +247,7 @@ html, body {
   transform: scale(1.05);
 }
 
-/* Preview Box */
+/* Preview box styling */
 #preview-box {
   position: absolute;
   width: 260px;
@@ -256,16 +255,16 @@ html, body {
   color: white;
   padding: 10px;
   border-radius: 10px;
-  display: block;      /* required for transitions */
-  opacity: 0;          /* start invisible */
-  pointer-events: none; /* allow hover through */
+  display: block;          /* must be block for transitions */
+  opacity: 0;              /* start invisible */
+  pointer-events: none;    /* ignore mouse events */
   transition: opacity 0.3s ease;
   z-index: 10000;
   box-shadow: 0 6px 20px rgba(0,0,0,0.6);
 }
 
 #preview-box.show {
-  opacity: 1; /* fades in */
+  opacity: 1;             /* fades in */
 }
 
 #preview-box img {
@@ -273,7 +272,3 @@ html, body {
   border-radius: 6px;
   margin-bottom: 5px;
 }
-
-
-
-/* end */
