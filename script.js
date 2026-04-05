@@ -89,6 +89,8 @@ fetch("/navbar.html")
     boxran: { url: "ARC/boxran.html", text: "b0xing r@nd0ms. with b0t or pe0p1e" },
     s0cc3ran: { url: "ARC/s0cc3ran.html", text: "s0ccer r@nd0ms. with b0t or pe0p1e" },
 
+    rtsr: { url: "ARC/rooftopmath.html", text: "roof sn1p3r r@nd0ms. with b0t or pe0p1e" },
+
     // Mobile buttons
     drialge: { url: "MOBILE/drive-algebra.html", text: "big truck and do stuff" },
     fnworld: { url: "MOBILE/fnworld.html", text: "rpg style" },
