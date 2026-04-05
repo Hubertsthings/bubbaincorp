@@ -164,7 +164,7 @@ body{
     display: flex;
     flex-direction: column; /* stack image and button vertically */
     align-items: flex-end;  /* right-align */
-    margin-bottom: 8px;
+    margin-top: 0px;
 }
 
 .mascot img {
