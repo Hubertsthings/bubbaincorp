@@ -15,7 +15,7 @@ document.addEventListener('keydown', function(event) {
       localStorage.setItem('redirectKey', redirectKey);
       alert(`Your key is now set to "${redirectKey}"`);
     }
-    return; // Don't redirect on this press
+    return; 
   }
 
   // If user presses the bound key, redirect
@@ -23,3 +23,4 @@ document.addEventListener('keydown', function(event) {
     window.location.href = 'https://turner.schoology.com';
   }
 });
+

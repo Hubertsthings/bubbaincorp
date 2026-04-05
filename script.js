@@ -49,12 +49,12 @@ fetch("/navbar.html")
 
 
     /* previewer of apps */
-document.addEventListener("DOMContentLoaded", () => {
+    document.addEventListener("DOMContentLoaded", () => {
   const previewBox = document.getElementById("preview-box");
   const previewIframe = document.getElementById("preview-iframe");
   const previewText = document.getElementById("preview-text");
 
-  // Preview data object — URLs and descriptions left empty
+  // Preview data object — URLs and descriptions left intact
   const previewData = {
     // PC buttons
     dta: { url: "Apps/DTA.html", text: "g†@ style app" },
@@ -119,20 +119,56 @@ document.addEventListener("DOMContentLoaded", () => {
           previewIframe.src = previewData[appClass].url;
           previewText.textContent = previewData[appClass].text;
 
-const boxHeight = previewBox.offsetHeight;
+          // ---------- SMART POSITIONING START ----------
+          const boxWidth = previewBox.offsetWidth;
+          const boxHeight = previewBox.offsetHeight;
+          const padding = 10;
 
-          previewBox.style.left = (e.pageX + 10) + "px";
-          previewBox.style.top = (e.pageY - boxHeight - 10) + "px";
+          let left = e.pageX + padding;
+          let top = e.pageY - boxHeight - padding;
+
+          // Flip to left if going off right edge
+          if (left + boxWidth > window.innerWidth) {
+            left = e.pageX - boxWidth - padding;
+          }
+
+          // Flip below if going above top edge
+          if (top < 0) {
+            top = e.pageY + padding;
+          }
+
+          previewBox.style.left = left + "px";
+          previewBox.style.top = top + "px";
+          // ---------- SMART POSITIONING END ----------
 
           previewBox.classList.add("show");
         }
-      }, 1000); // 2-second hover delay
+      }, 2000); // 2-second hover delay
     });
 
     button.addEventListener("mousemove", (e) => {
       if (previewBox.classList.contains("show")) {
-        previewBox.style.left = (e.pageX + 10) + "px";
-        previewBox.style.top = (e.pageY + 10) + "px";
+
+        // ---------- SMART POSITIONING START ----------
+        const boxWidth = previewBox.offsetWidth;
+        const boxHeight = previewBox.offsetHeight;
+        const padding = 10;
+
+        let left = e.pageX + padding;
+        let top = e.pageY - boxHeight - padding;
+
+        if (left + boxWidth > window.innerWidth) {
+          left = e.pageX - boxWidth - padding;
+        }
+
+        if (top < 0) {
+          top = e.pageY + padding;
+        }
+
+        previewBox.style.left = left + "px";
+        previewBox.style.top = top + "px";
+        // ---------- SMART POSITIONING END ----------
+
       }
     });
 
