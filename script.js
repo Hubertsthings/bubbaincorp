@@ -59,7 +59,7 @@ fetch("/navbar.html")
     // PC buttons
     dta: { url: "Apps/DTA.html", text: "g†@ style app" },
     raldi: { url: "PC/RALDI.html", text: "modded version of b@ld1" },
-    m: { url: "broken", text: "broken" },
+    m: { url: "broken", text: "broken. ill add better one soon." },
     superh: { url: "PC/suph.html", text: " hit red people" },
     uk: { url: "PC/ultrak1ll.html", text: " be a robot and hit z0mb13s" },
     bacon: { url: "PC/baconmay.html", text: "be a pig and attack" },
@@ -75,18 +75,18 @@ fetch("/navbar.html")
     hl: { url: "PC/hl.html", text: "very popular." },
 
     // Arcade buttons
-    yokedsqrt: { url: "", text: "" },
-    FNAE: { url: "", text: "" },
-    clusteru: { url: "", text: "" },
-    driftb: { url: "", text: "" },
-    custsupport: { url: "", text: "" },
-    tosst: { url: "", text: "" },
-    fnafsisterloc: { url: "", text: "" },
-    tsimi: { url: "", text: "" },
-    ptk1: { url: "", text: "" },
-    DLng0m: { url: "", text: "" },
-    boxran: { url: "", text: "" },
-    s0cc3ran: { url: "", text: "" },
+    yokedsqrt: { url: "ARC/yokedsqrt.html", text: "get strong and healthy" },
+    FNAE: { url: "ARC/FNAE.html", text: "dont let the big e get you" },
+    clus: { url: "ARC/clusteru.html", text: "jump ontop of trucks" },
+    driftb: { url: "ARC/driftb.html", text: "dont fall into the void" },
+    custsupport: { url: "ARC/custsupport.html", text: "be in india and be customer support" },
+    tosst: { url: "ARC/tosst.html", text: "Fly as a turtle" },
+    fnsl: { url: "ARC/fnafsisterloc.html", text: "i think you start in an elevator" },
+    tsimi: { url: "ARC/tsimi.html", text: "Be in india and truck" },
+    ptk1: { url: "ARC/ptk1.html", text: "F1" },
+    DLng0m: { url: "ARC/DLng0m.html", text: "DOWLOAD ONLY. be robot and get upgrades" },
+    boxran: { url: "ARC/boxran.html", text: "b0xing r@nd0ms. with b0t or pe0p1e" },
+    s0cc3ran: { url: "ARC/s0cc3ran.html", text: "s0ccer r@nd0ms. with b0t or pe0p1e" },
 
     // Mobile buttons
     "drive-algebra": { url: "", text: "" },
@@ -178,12 +178,13 @@ fetch("/navbar.html")
 button.addEventListener("mouseleave", () => {
   clearTimeout(hoverTimer);
   previewBox.classList.remove("show");
+  previewIframe.src = "";
 
   // Stop audio/video inside iframe if same-origin
   try {
     const iframeDoc = previewIframe.contentDocument || previewIframe.contentWindow.document;
 
-    
+
 const mediaElements = previewIframe.contentDocument?.querySelectorAll("audio, video") || [];
 mediaElements.forEach(media => {
   media.pause();
