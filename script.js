@@ -195,8 +195,7 @@ mediaElements.forEach(media => {
 });
 
   } catch (err) {
-    // If iframe is cross-origin, we can't access it
-    console.warn(" lil bro, I cannot stop iframe media due to cross-origin restrictions.");
+    console.warn(" lil nice, I cannot stop iframe media due to cross-origin restrictions.");
   }
 });
 
