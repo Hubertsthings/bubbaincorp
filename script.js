@@ -89,22 +89,22 @@ fetch("/navbar.html")
     s0cc3ran: { url: "ARC/s0cc3ran.html", text: "s0ccer r@nd0ms. with b0t or pe0p1e" },
 
     // Mobile buttons
-    "drive-algebra": { url: "", text: "" },
-    fnworld: { url: "", text: "" },
-    Sd33boxle: { url: "", text: "" },
-    brustar: { url: "", text: "" },
-    madbird: { url: "", text: "" },
-    BlOCKBL: { url: "", text: "" },
-    smallworldc: { url: "", text: "" },
-    bitl: { url: "", text: "" },
-    gag: { url: "", text: "" },
-    "p^z1": { url: "", text: "" },
-    "p^z2": { url: "", text: "" },
-    jetjoy: { url: "", text: "" },
-    crazyc3d: { url: "", text: "" },
-    snowrir: { url: "", text: "" },
-    bbalgebra: { url: "", text: "" },
-    fnfriday: { url: "", text: "" }
+    drialge: { url: "MOBILE/drive-algebra.html", text: "big truck and do stuff" },
+    fnworld: { url: "MOBILE/fnworld.html", text: "rpg style" },
+    Sd33boxle: { url: "MOBILE/Sd33boxle.html", text: "science work and stuff" },
+    brustar: { url: "MOBILE/brustar.html", text: "that one phone @pp" },
+    madbird: { url: "MOBILE/madbird.html", text: "birds that hate pigs" },
+    BlOCKBL: { url: "MOBILE/BlOCKBL.html", text: "quizlit blocks" },
+    smallworldc: { url: "MOBILE/smallworldc.html", text: "world cup" },
+    bitl: { url: "MOBILE/bitl.html", text: "life sim" },
+    gag: { url: "MOBILE/gag.html", text: "grow fruits and vestables" },
+    pz1: { url: "MOBILE/p^z1.html", text: "plants that dont like the dead" },
+    pz2: { url: "MOBILE/p^z2.html", text: "plants that dont like the dead 2" },
+    jetjoy: { url: "MOBILE/jetjoy.html", text: "steal a jetpack and f1y" },
+    crazyc3d: { url: "MOBILE/crazyc3d.html", text: "be sheep" },
+    snowrir: { url: "MOBILE/snowrir.html", text: "snow riding" },
+    bbalgebra: { url: "MOBILE/bbalgebra.html", text: "lebron" },
+    fnfriday: { url: "MOBILE/fnfriday.html", text: "tg1 friday" }
   };
 
   let hoverTimer;
