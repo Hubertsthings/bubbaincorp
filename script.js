@@ -172,9 +172,29 @@ fetch("/navbar.html")
       }
     });
 
-    button.addEventListener("mouseleave", () => {
-      clearTimeout(hoverTimer);
-      previewBox.classList.remove("show");
-    });
+
+
+
+button.addEventListener("mouseleave", () => {
+  clearTimeout(hoverTimer);
+  previewBox.classList.remove("show");
+
+  // Stop audio/video inside iframe if same-origin
+  try {
+    const iframeDoc = previewIframe.contentDocument || previewIframe.contentWindow.document;
+
+    
+const mediaElements = previewIframe.contentDocument?.querySelectorAll("audio, video") || [];
+mediaElements.forEach(media => {
+  media.pause();
+  media.currentTime = 0;
+});
+
+  } catch (err) {
+    // If iframe is cross-origin, we can't access it
+    console.warn(" lil bro, I cannot stop iframe media due to cross-origin restrictions.");
+  }
+});
+
   });
 });
