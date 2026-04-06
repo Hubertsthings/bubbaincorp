@@ -124,7 +124,7 @@ fetch("/navbar.html")
     fnfriday: { url: "MOBILE/fnfriday.html", text: "tg1 friday" },
     therb: { url: "MOBILE/retrb.html", text: "learn in the nfI" },
     clashingofclans: { url: "MOBILE/cl@shingofcl@ns.html", text: "clashing r0yale" },
-    geodashsubzero: { url: "MOBILE/clgdz.html", text: "geo dash" },
+    
 
   };
 
