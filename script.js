@@ -76,7 +76,7 @@ fetch("/navbar.html")
     csg: { url: "PC/counterela.html", text: " chinese cs" },
  raga: { url: "PC/clr@gd0llarchers", text: "what a doll. shoot arrows at people" }, 
  end: { url: "PC/cltimetog@mbl.html", text: "las vegas pt2" }, 
- gmd: { url: "PC/end0.html", text: "paracite" }, 
+ gmb: { url: "PC/end0.html", text: "paracite" }, 
 
 
 
