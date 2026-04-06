@@ -6,6 +6,7 @@
 + r3tr0 b0wl
 + sup3® ma®10 64
 * fixed bull3t f0rç3
+* fixed text in button glitch
 
 4/4/26
 + Rooftop Sn1per
