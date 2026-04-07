@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 
 
 
@@ -18,7 +17,7 @@
       overflow: hidden;
     }
 
-    #gameContainer canvas {
+    #lessonContainer canvas {
       display:block;
     }
 
@@ -177,11 +176,11 @@
 
     window.addEventListener('resize', resizeUnityContainer);
 
-    function UnityProgress(gameInstance, progress) {
+    function UnityProgress(meInstance, progress) {
       var container = document.getElementById("meContainer");
       if (container) document.body.style.background = container.style.background;
 
-      if (!gameInstance.Module) {
+      if (!meInstance.Module) {
          return;
       } else if (progress === "complete") {
         document.getElementById("loadingBox").style.display = "none";
@@ -251,7 +250,7 @@
           console.error("Unity load failed:", err);
           var loadingInfo = document.getElementById("loadingInfo");
           if (loadingInfo) {
-            loadingInfo.innerHTML = "ERROR LOADING GAME - Check console";
+            loadingInfo.innerHTML = "ERROR LOADING lesson - Check console";
           }
         });
     });
