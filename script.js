@@ -124,8 +124,8 @@ fetch("/navbar.html")
     fnfriday: { url: "MOBILE/fnfriday.html", text: "tg1 friday" },
     therb: { url: "MOBILE/retrb.html", text: "learn in the nfI" },
     clashingofclans: { url: "MOBILE/cl@shingofcl@ns.html", text: "clashing r0yale" },
-    
-
+    dashin: { url: "MOBILE/clgeometrymathdas.html", text: "dash" },
+  
   };
 
   let hoverTimer;
