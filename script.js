@@ -83,7 +83,7 @@ kid2: { url: "PC/kidgarden2", text: "kidnergarten part 2" },
 kid3: { url: "PC/kidgarden3", text: "kidnergarten part 3" }, 
 lol: { url: "PC/lool", text: "1v1+l0l" }, 
  fri: { url: "PC/myfri.html", text: "my fri pedr0" }, 
-
+ mad: { url: "PC/mad.html", text: "combat but it is m@d" }, 
 
 
 
