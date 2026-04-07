@@ -4,8 +4,11 @@
 + time to g@mble
 +  end0par@citic
 + geo d@sh lite
-*new download system made
+* new download system made
 * download for Bacon may die
+* new download for n-g0n
+
+
 
 4/5/26
 + test pop-up
