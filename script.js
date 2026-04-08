@@ -117,7 +117,7 @@ exe: { url: "PC/exe.html", text: "you have got to run" },
     bb: { url: "ARC/bb.html", text: " launch the borit0" },
    ones: { url: "ARC/onesocialstudies.html", text: " legacy " },
    sra: { url: "ARC/schoolrunawaymath.html", text: " be a boy and runaway " },
-
+   sf: { url: "ARC/street.html", text: " f1ght in the street " },
 
 
     // Mobile buttons
