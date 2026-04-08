@@ -87,6 +87,13 @@ lol: { url: "PC/lool", text: "1v1+l0l" },
 
 
 
+
+
+
+
+ 
+
+
     // Arcade buttons
     yokedsqrt: { url: "ARC/yokedsqrt.html", text: "get strong and healthy" },
     FNAE: { url: "ARC/FNAE.html", text: "dont let the big e get you" },
