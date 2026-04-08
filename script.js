@@ -141,6 +141,11 @@ lol: { url: "PC/lool", text: "1v1+l0l" },
     clashingofclans: { url: "MOBILE/cl@shingofcl@ns.html", text: "clashing r0yale" },
     clgdlite: { url: "MOBILE/clgeodashlite.html", text: "ge0 d@sh1ng" },
     flyg: { url: "MOBILE/flyingoril.html", text: "be the gorilla" },
+  jhot: { url: "MOBILE/jt.html", text: "jhon w1ck pt2" },
+
+
+
+
 
   };
 
