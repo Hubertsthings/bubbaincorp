@@ -89,6 +89,7 @@ exe: { url: "PC/exe.html", text: "you have got to run" },
 ace: { url: "PC/ace.html", text: "court case" }, 
 just: { url: "PC/justice.html", text: "court case pt2" },
 years: { url: "PC/year.html", text: "court case pt3" },
+swords: { url: "PC/sword.html", text: "sw0rds f1ghting " },
 
 
 
