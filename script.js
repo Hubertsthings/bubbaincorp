@@ -90,6 +90,7 @@ ace: { url: "PC/ace.html", text: "court case" },
 just: { url: "PC/justice.html", text: "court case pt2" },
 years: { url: "PC/year.html", text: "court case pt3" },
 swords: { url: "PC/sword.html", text: "sw0rds f1ghting " },
+"3pb": { url: "PC/3pb.html", text: "3d p1n b@11 " },
 
 
 
@@ -147,6 +148,7 @@ fnoof2: { url: "ARC/fnoof2.html", text: "mall cop 2" },
     clgdlite: { url: "MOBILE/clgeodashlite.html", text: "ge0 d@sh1ng" },
     flyg: { url: "MOBILE/flyingoril.html", text: "be the gorilla" },
   jhot: { url: "MOBILE/jt.html", text: "jhon w1ck pt2" },
+   tript: { url: "MOBILE/tript.html", text: "Be the tung and escape" },
 
 
 
