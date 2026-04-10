@@ -124,7 +124,7 @@ swords: { url: "PC/sword.html", text: "sw0rds f1ghting " },
    sf: { url: "ARC/street.html", text: " f1ght in the street " },
 fnoof1: { url: "ARC/fnoof1.html", text: "mall cop 1" },
 fnoof2: { url: "ARC/fnoof2.html", text: "mall cop 2" },
-
+snout: { url: "ARC/iron.html", text: "end the wolfs" },
 
     // Mobile buttons
     drialge: { url: "MOBILE/drive-algebra.html", text: "big truck and do stuff" },
