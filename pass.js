@@ -1,6 +1,8 @@
 
   const users = {
     "admin": "niceshoes",
+    "****": "****",
+    "username": "pw1",
     "bob": "cool",
     "john": "abc123"
   };
