@@ -166,6 +166,7 @@ sbc: { url: "ARC/spacebar.html", text: "you must press the bar" },
    tript: { url: "MOBILE/tript.html", text: "Be the tung and escape" },
    status: { url: "TOOLS/status.html", text: "server status of all domains" },
    coreb: { url: "MOBILE/coremath.html", text: "pin the ball" },
+   geod1: { url: "MOBILE/geometrydreal.html", text: "learn geometry now" },
 
 
 
