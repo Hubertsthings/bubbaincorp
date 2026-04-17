@@ -144,6 +144,25 @@ lessons. These include, Math, English, History, and Science.</h2>
 <script src="script.js"></script>
 <!-- end -->
 
+
+
+<button class="mathbutton" onclick="openSite()">Open My Site</button>
+
+<script>
+function openSite() {
+  const win = window.open("about:blank", "_blank");
+
+  win.document.write(`
+    <iframe src="https://3.bubbaincorp.workers.dev"
+      style="width:100vw; height:100vh; border:none;">
+    </iframe>
+  `);
+}
+</script>
+
+
+
+
 <a href="bubbapremium.html" class="mathbutton"  > Bubba Premium™</a>
 
 
