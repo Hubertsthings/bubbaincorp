@@ -1,0 +1,10 @@
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    if: github.actor != 'cloudflare-workers[bot]'
+    steps:
+      - name: Send message to Discord
+        run: |
+          curl -H "Content-Type: application/json" \
+          -d "{\"content\": \"New push by ${{ github.actor }}\"}" \
+          ${{ secrets.DISCORD_WEBHOOK }}
