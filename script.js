@@ -172,9 +172,9 @@ brug: { url: "ARC/burger.html", text: "you must eat the burger now" },
    coreb: { url: "MOBILE/coremath.html", text: "pin the ball" },
    geod1: { url: "MOBILE/geometrydreal.html", text: "learn geometry now" },
    dl1: { url: "MOBILE/dl.html", text: "time to duck pt1 " },
-
-
-
+  dl2: { url: "MOBILE/dl2.html", text: "time to duck pt2 " },
+  dl3: { url: "MOBILE/dl3.html", text: "time to duck pt3 " },
+  dl5: { url: "MOBILE/dl5.html", text: "time to duck pt5 " },
 
   };
 
