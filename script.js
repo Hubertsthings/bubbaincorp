@@ -101,8 +101,8 @@ swords: { url: "PC/sword.html", text: "sw0rds f1ghting " },
 "stick2": { url: "PC/complex.html", text: "flee it now but it is better than the last" },
 "stick3": { url: "PC/ship.html", text: "there is a ship in the air " },
 "stick4": { url: "PC/steal.html", text: "steal it now! " },
-dh: { url: "PC/drifh.html", text: "you must drift" },
-
+"dh": { url: "PC/drifh.html", text: "you must drift" },
+"coals": { url: "PC/coal.html", text: "mine it now" },
 
 
 
@@ -138,6 +138,10 @@ fnoof2: { url: "ARC/fnoof2.html", text: "mall cop 2" },
 snout: { url: "ARC/iron.html", text: "end the wolfs" },
 sbc: { url: "ARC/spacebar.html", text: "you must press the bar" },
 ball: { url: "ARC/basket.html", text: "it is time to ball my people" },
+brug: { url: "ARC/burger.html", text: "you must eat the burger now" },
+
+
+
 
 
 
@@ -167,10 +171,10 @@ ball: { url: "ARC/basket.html", text: "it is time to ball my people" },
    status: { url: "TOOLS/status.html", text: "server status of all domains" },
    coreb: { url: "MOBILE/coremath.html", text: "pin the ball" },
    geod1: { url: "MOBILE/geometrydreal.html", text: "learn geometry now" },
-
-
-
-
+   dl1: { url: "MOBILE/dl.html", text: "time to duck pt1 " },
+  dl2: { url: "MOBILE/dl2.html", text: "time to duck pt2 " },
+  dl3: { url: "MOBILE/dl3.html", text: "time to duck pt3 " },
+  dl5: { url: "MOBILE/dl5.html", text: "time to duck pt5 " },
 
   };
 
