@@ -178,7 +178,8 @@ brug: { url: "ARC/burger.html", text: "you must eat the burger now" },
   dl5: { url: "MOBILE/dl5.html", text: "time to duck pt5 " },
   tio: { url: "MOBILE/terratoria.html", text: "isreal 😈" },
 brainrot: { url: "mobile/stealbrain.html", text: "merk" },
-
+smh: { url: "mobile/smash.html", text: "hit stuff with your balls" },
+snowio: { url: "mobile/snowio.html", text: "hit others with balls" },
 
 
 
