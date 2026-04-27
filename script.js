@@ -1,4 +1,4 @@
-function toggleNav(){
+﻿function toggleNav(){
 
     const navbar = document.getElementById("navbar");
     const button = document.getElementById("toggleBtn");
@@ -32,18 +32,110 @@ function initNavbar() {
     }
 }
 
+function openAboutBlankPage() {
+    const choice = prompt(
+      "Choose for A:B cloak. each represents the starting nuumber of your domain. (ex domain # = #.com):\n" +
+      "1 -  domain 1\n" +
+      "2 -  domain 2\n" +
+      "3 -  domain 3\n" +
+      "4 - Enter custom URL"
+    );
+    if (!choice) return;
+
+    let url;
+    switch (choice.trim()) {
+      case "1":
+        url = "https://1.bubbaincorp.workers.dev";
+        break;
+      case "2":
+        url = "https://2.bubbaincorp.workers.dev";
+        break;
+      case "3":
+        url = "https://3.bubbaincorp.workers.dev";
+        break;
+      case "4":
+        url = prompt("Enter the site URL to open in about:blank:");
+        if (!url) return;
+        break;
+      default:
+        alert("Invalid selection. Please choose 1, 2, 3, or 4.");
+        return;
+    }
+
+    const win = window.open("about:blank", "_blank");
+    if (!win) return;
+
+    win.document.write(`
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>Loading...</title>
+          <style>
+            html, body {
+              margin: 0;
+              padding: 0;
+              height: 100%;
+              overflow: hidden;
+              background: black;
+            }
+            iframe {
+              border: none;
+              width: 100%;
+              height: 100%;
+            }
+          </style>
+          <script>
+            alert("Opening the selected site in about:blank.");
+          </script>
+        </head>
+        <body>
+          <iframe src="${url}"></iframe>
+        </body>
+      </html>
+    `);
+}
+
+function openABConverter() {
+    const url = prompt("Enter a website URL:");
+    if (!url) return;
+
+    const win = window.open("about:blank", "_blank");
+    if (!win) return;
+
+    win.document.write(`
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>Loading...</title>
+          <style>
+            html, body {
+              margin: 0;
+              height: 100%;
+              overflow: hidden;
+            }
+            iframe {
+              border: none;
+              width: 100%;
+              height: 100%;
+            }
+          </style>
+        </head>
+        <body>
+          <iframe src="${url}"></iframe>
+        </body>
+      </html>
+    `);
+}
+
+function initNavbarButtons() {
+    const opt1 = document.getElementById("opt1");
+    const op2 = document.getElementById("op2");
+
+    if (opt1) opt1.addEventListener("click", openAboutBlankPage);
+    if (op2) op2.addEventListener("click", openABConverter);
+}
+
 // Load navbar dynamically
-fetch("/navbar.html")
-    .then(r => r.text())
-    .then(data => {
-        document.getElementById("navbar-container").innerHTML = data;
-        initNavbar(); // set up button listeners
-    })
-    .catch(err => console.error("Navbar failed to load:", err));
-
-
-
-
 
 
 
@@ -56,7 +148,7 @@ fetch("/navbar.html")
   // Preview data object  html and descriptions left 
   const previewData = {
     // PC buttons
-    dta: { url: "Apps/DTA.html", text: "g†@ style app" },
+    dta: { url: "Apps/DTA.html", text: "gâ€ @ style app" },
     raldi: { url: "PC/RALDI.html", text: "modded version of b@ld1" },
     m: { url: "broken", text: "broken. ill add better one soon." },
     superh: { url: "PC/suph.html", text: " hit red people" },
@@ -383,6 +475,9 @@ function initNavbarDropdown() {
     isPinned = false;
     menu.classList.remove("show");
   });
+
+  initNavbar();
+  initNavbarButtons();
 }
 
 
@@ -393,5 +488,87 @@ fetch("/navbar.html")
     document.getElementById("navbar-container").innerHTML = data;
 
     // IMPORTANT
+    initNavbar();
     initNavbarDropdown();
-  });
+    initNavbarButtons();
+  })
+  .catch(err => console.error("Navbar failed to load:", err));
+
+
+
+
+
+
+
+
+  
+
+
+  document.addEventListener("click", (event) => {
+  const clicked = event.target.nodeType === Node.ELEMENT_NODE ? event.target : event.target.parentElement;
+  const target = clicked?.closest("#opt1, #opt2, #op2");
+  if (!target) return;
+
+  event.preventDefault();
+
+  if (target.id === "opt1") {
+    const win = window.open("about:blank", "_blank");
+    win.document.write(`
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>Loading...</title>
+          <style>
+            html, body {
+              margin: 0;
+              padding: 0;
+              height: 100%;
+              overflow: hidden;
+              background: black;
+            }
+            iframe {
+              border: none;
+              width: 100%;
+              height: 100%;
+            }
+          </style>
+          <script>
+            alert("this is using domain 3. use A:B converter and type the domain you have if you dont use this one.");
+          </script>
+        </head>
+        <body>
+          <iframe src="https://3.bubbaincorp.workers.dev"></iframe>
+        </body>
+      </html>
+    `);
+  } else {
+    const url = prompt("Enter a website URL:");
+    if (!url) return;
+
+    const win = window.open("about:blank", "_blank");
+    win.document.write(`
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>Loading...</title>
+          <style>
+            html, body {
+              margin: 0;
+              height: 100%;
+              overflow: hidden;
+            }
+            iframe {
+              border: none;
+              width: 100%;
+              height: 100%;
+            }
+          </style>
+        </head>
+        <body>
+          <iframe src="${url}"></iframe>
+        </body>
+      </html>
+    `);
+  }
+});
+
