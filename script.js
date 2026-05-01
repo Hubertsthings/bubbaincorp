@@ -94,9 +94,7 @@ function openAboutBlankPage() {
               height: 100%;
             }
           </style>
-          <script>
-            alert("Opening the selected site in about:blank.");
-          </script>
+    
         </head>
         <body>
           <iframe src="${url}"></iframe>
@@ -482,9 +480,6 @@ fetch("/navbar.html")
     initNavbarButtons();
   })
   .catch(err => console.error("Navbar failed to load:", err));
-
-
-
 
 
 
