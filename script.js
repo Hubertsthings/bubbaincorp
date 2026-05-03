@@ -133,7 +133,7 @@ function initNavbarButtons() {
     superh: { url: "PC/suph.html", text: " hit red people" },
     uk: { url: "PC/ultrak1ll.html", text: " be a robot and hit z0mb13s" },
     bacon: { url: "PC/baconmay.html", text: "be a pig and attack" },
-    bbp: { url: "PC/bbppagelessons.html", text: "dowload only. Dont let the bald guy get you" },
+    bbp: { url: "DLapps/bbppagelessons.html", text: "Dont let the bald guy get you. fun" },
     delta: { url: "PC/dtr.html", text: " rpg style app " },
     ppl: { url: "PC/PeoplePg.html", text: "spawn people and make scenario" },
     tt: { url: "PC/Talletail.html", text: "dont let the bear thing get you at night. horror" },
@@ -212,6 +212,9 @@ snout: { url: "ARC/iron.html", text: "end the wolfs" },
 sbc: { url: "ARC/spacebar.html", text: "you must press the bar" },
 ball: { url: "ARC/basket.html", text: "it is time to ball my people" },
 brug: { url: "ARC/burger.html", text: "you must eat the burger now" },
+ping: { url: "ARC/plainc.html", text: "you must covid 19" },
+uvu: { url: "ARC/uvuv.html", text: "UvuvwevwevweOnyetenvewveUgwemubwemOssas" },
+sfs: { url: "ARC/spacefl.html", text: "Nasa sim. download soon" },
 
 
 
@@ -252,6 +255,7 @@ brug: { url: "ARC/burger.html", text: "you must eat the burger now" },
 brainrot: { url: "mobile/stealbrain.html", text: "merk" },
 smh: { url: "mobile/smash.html", text: "hit stuff with your balls" },
 snowio: { url: "mobile/snowio.html", text: "hit others with balls" },
+minesw: { url: "mobile/msweepplu.html", text: "become a sweeper" }
 
 
 
