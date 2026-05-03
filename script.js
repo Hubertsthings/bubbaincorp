@@ -38,7 +38,7 @@ function openAboutBlankPage() {
       "1 -  domain 1\n" +
       "2 -  domain 2\n" +
       "3 -  domain 3\n" +
-      "4 -  soon\n" +
+      "4 -  download site\n" +
       "5 -  soon\n" +
       "6 - Enter custom URL"
     );
@@ -56,7 +56,7 @@ function openAboutBlankPage() {
         url = "https://3.1backup5acc.workers.dev/";
         break;
       case "4":
-        url = "https://4.bubbaincorp.workers.dev";
+        url = "https://liveschool.shshnsjsue.workers.dev/";
         break;
       case "5":
         url = "https://5.bubbaincorp.workers.dev";
