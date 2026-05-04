@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>IXL | Dashboard</title>
+
+<link rel="icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJQAAACUCAMAAABC4vDmAAAAhFBMVEV9uwL///99uwH/ywoAru90twDE3q3/0EL/+On/yQDnuQoArO/1+v5At/GK1fbo9f3/3Xz/8L3tvgr/1lnqwkT//PX//fJhwPOc2vf/zjr/+eTwxkT/9tj/663/8MP/2mH/ziL/4o7/0jT/1Ur/9dH/5Zj/7bX3xQr/56D/4YT/2Wf/3nNOZ0hIAAAD80lEQVR4nO2biXabMBBFEbQ1ytLEuLg18RoT20n+//8qbEBCeorBR1YmrV7S02QkNPcM40ELiaJKsfhqJH/qmJXmQeY4splNh9Icy2vbIepW1dz8Hnf+i7TfuyPEH40Q4REi5R8xKJIiGSmSUCRFMlIkoUiKbKTai6JO9FSz0jzIHKP7EXe9mGaykSInkpEiCUVSZCNFriSQFMnbRxJKtsrIAbPS7CGnQqS+fKTIiWSk4vj4Xf0QR/I7+tis2gaaT97tZrK3r1L49IVPn+tIhZwKOeUwUt8JKvpBUBEjqADVVwGqrwJUXwWovqIP9WDqTpjz1KYcDWntXWs6COru972hP8I+ncxGULMdGLGYqF2efjV6ai7aDIO6v/2m6fbn0c8zTzhSMjcGnG7V9iS7qZW1QzwOhNKZaig2F1RIfGvci023Zwslr3EFxcq1hepVG2+hdaihsv0VoNiYQyqedNOq0LvVUHvlEndQbGEJVSet0pHeK9OZnEKxFwvVRKkLj0afTGdyC6WncOtk0/bYmT0ynckxVG7G4eRlXHcoEwiVad2dQjG2wsn+XJygUd3IdCbnUMUEU03sgcx0JudQLMXlih9E2wE27Q2Lcyg2n0HX6yUrUQNfbQ2zeyiYzFVazU3v1VOoMNPwClBsjKnQfRVMuZmF14ASxQhXBpMpKcSsxw+UrbQbzp9L5g+Kvfah4nzJfEKBR5zJlFRMPqHyt7NUx9LlFQr5gkxeoViBypLiuJmQeoWyzflqv+v0M6DmxhQTO/YJVVhWN4Znj1Bn81y4fvEMBR5ogGrhF8oyWdfltaL3esrUNd0XFFiyJHg6I5aEnqDGMCywQvCRp/kUnHnyQwEn72KW5wMKbr/wlbipMIBe5uhTyLSt1n2W9DdWWM6h4JSFJ+WxET94MmONxVdjoOXFUO8wcepZSgkfPdmNSYU0yy+EgkWTvzfNsFZk+v4GFh9dCAWXwHyUth3QVoO56+IUCi6t+LqU16dg+WzuT7mEWuJKtFCuF0t3vGl2nuoyqDlmemcdmVmXaXvDLqFsFVvbsc6Nz2ezO3wFKDyrayqUolR/CjX76GeoLoCyrPO6CXXSTqOSJw4XQ1mOQR7hEYieUCdtOn0klEh2WDXPFk/LgdEBnxdN4BlW/tbpLQ+M2hMjePT0ZoOyHa0NOyKbnjtaw1KHoH8ISUUBqq8CVF8FqL4KUH1F80XBz359Eonmy6eRbJVvyAKz0vw/v9AcIhVe/f7nc4qkSP7ZE9mcIieykSL36QuR+tKRIglFViGnvuztIxkpklAkRTZSoSSEnAol4TNEMlIkoUiKZKRIQslWGTlgVpoHmWOUJHHXi27+C5xjo4B3CjO4AAAAAElFTkSuQmCC">
+
+  <style>
+ 
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #000;
+      color: white;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #launcher {
+      text-align: center;
+       
+      
+    }
+
+    button {
+      padding: 15px 30px;
+      font-size: 20px;
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+      background: #4caf50;
+      color: white;
+      margin-top :10px;
+      display: block; 
+  width: 100%; /* Set a width if needed */
+  
+      
+    }
+
+    button:hover {
+      background: #45a049;
+    }
+
+    #app {
+      display: none;
+      width: 100vw;
+      height: 100vh;
+    }
+
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Launcher screen -->
+  <div id="launcher">
+          <button id="opt1">Open About:Blank (all apps works) </button>
+    <button onclick="startApp()">Open locally</button>
+    <button onclick="start2()">releases</button>
+
+
+<script>
+fetch('https://raw.githubusercontent.com/Hubertsthings/message-updater/main/message.json?t=${Date.now()}')
+  .then(res => res.json())
+  .then(data => {
+    document.getElementById('live-message').innerText = data.message;
+  });
+  
+  
+  
+// First button: Open example.com in about:blank
+document.getElementById("opt1").addEventListener("click", () => {
+  const win = window.open("about:blank", "_blank");
+
+  if (!win) {
+    alert("Pop-up blocked! Please allow pop-ups for this site.");
+    return;
+  }
+
+  win.document.write(`
+    <!DOCTYPE html>
+    <html>
+      <head>
+      
+      <title>IXL | Dashboard</title>
+
+        <style>
+          html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+            background: black;
+            color: white;
+          }
+          iframe {
+            border: none;
+            width: 100%;
+            height: 100%;
+          }
+        </style>
+      </head>
+      <body>
+        <iframe src="https://liveschool.shshnsjsue.workers.dev"></iframe>
+      </body>
+    </html>
+  `);
+
+  win.document.close(); // Finalize the document write
+});
+
+</script>   
+    <p> v1.1</p>
+    <br>
+    <p>live message:</p>
+    <div style="color:red;" id="live-message"></div>
+
+
+
+    <div style="color:red;" id="live-message"></div>
+
+  
+  
+  
+</script> 
+
+
+
+</div>
+
+
+  </div>
+  <div id="app">
+    <iframe src="https://liveschool.shshnsjsue.workers.dev/"></iframe>
+    
+  </div>
+
+  <script>
+    function startApp() {
+      document.getElementById("launcher").style.display = "none";
+      document.getElementById("app").style.display = "block";
+    }
+    
+    function start2() {
+        window.open("https://github.com/Hubertsthings/bubbaincorp/releases/tag/site", "_blank");
+    }
+    
+  </script>
+
+
+
+
+</body>
+</html>
