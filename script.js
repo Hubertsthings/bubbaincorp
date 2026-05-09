@@ -216,7 +216,7 @@ ping: { url: "ARC/plainc.html", text: "you must covid 19" },
 uvu: { url: "ARC/uvuv.html", text: "UvuvwevwevweOnyetenvewveUgwemubwemOssas" },
 sfs: { url: "ARC/spacefl.html", text: "Nasa sim. download soon" },
 deltas: { url: "ARC/flightsim.html", text: "become the person of air" },
-
+chomp: { url: "ARC/com3d.html", text: "eat all of the cheese" },
 
 
 
