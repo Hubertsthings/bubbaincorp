@@ -180,7 +180,7 @@ swords: { url: "PC/sword.html", text: "sw0rds f1ghting " },
 "phish": { url: "PC/web.html", text: "post" },
 "tabs": { url: "PC/tabss.html", text: "totally acurate ba††le s1m" },
 "bend": { url: "PC/beand.html", text: "the machine of ink" },
-
+"slowro": { url: "PC/slowroad.html", text: "drive s1m" },
 
 
     // Arcade buttons
@@ -260,7 +260,12 @@ snowio: { url: "MOBILE/snowio.html", text: "hit others with balls" },
 minesw: { url: "MOBILE/msweepplu.html", text: "become a sweeper" },
 "3ddash": { url: "MOBILE/3ddas.html", text: "3d version of gd" },
 imp: { url: "MOBILE/impossible.html", text: "3d version of gd" },
-ltf: { url: "MOBILE/learntofly.html", text: "you will be educated" }
+ltf: { url: "MOBILE/learntofly.html", text: "you will be educated" },
+motor2: { url: "MOBILE/motor2.html", text: "you will use a dirt bike" },
+yardsale: { url: "MOBILE/yardsale.html", text: "sell stuff" },
+
+
+
 
   };
 
