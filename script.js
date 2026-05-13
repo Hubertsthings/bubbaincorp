@@ -178,7 +178,8 @@ swords: { url: "PC/sword.html", text: "sw0rds f1ghting " },
 "slimera": { url: "DLapps/slomer.html", text: "form a slime empire" },
 "postoffice": { url: "PC/postaloffice.html", text: "post" },
 "phish": { url: "PC/web.html", text: "post" },
-
+"tabs": { url: "PC/tabss.html", text: "totally acurate ba††le s1m" },
+"bend": { url: "PC/beand.html", text: "the machine of ink" },
 
 
 
@@ -217,9 +218,9 @@ uvu: { url: "ARC/uvuv.html", text: "UvuvwevwevweOnyetenvewveUgwemubwemOssas" },
 sfs: { url: "ARC/spacefl.html", text: "Nasa sim. download soon" },
 deltas: { url: "ARC/flightsim.html", text: "become the person of air" },
 chomp: { url: "ARC/com3d.html", text: "eat all of the cheese" },
-
-
-
+t3: { url: "ARC/triple3.html", text: "b@ld1 bas1cs m0d" },
+ac1: { url: "ARC/ac.html", text: "become the crosser" },
+funnyb: { url: "ARC/funnybat.html", text: "you will be a general" },
 
 
     // Mobile buttons
@@ -257,9 +258,9 @@ brainrot: { url: "MOBILE/stealbrain.html", text: "merk" },
 smh: { url: "MOBILE/smash.html", text: "hit stuff with your balls" },
 snowio: { url: "MOBILE/snowio.html", text: "hit others with balls" },
 minesw: { url: "MOBILE/msweepplu.html", text: "become a sweeper" },
-"3ddash": { url: "MOBILE/3ddas.html", text: "3d version of gd" }
-
-
+"3ddash": { url: "MOBILE/3ddas.html", text: "3d version of gd" },
+imp: { url: "MOBILE/impossible.html", text: "3d version of gd" },
+ltf: { url: "MOBILE/learntofly.html", text: "you will be educated" }
 
   };
 
