@@ -222,8 +222,7 @@ t3: { url: "ARC/triple3.html", text: "b@ld1 bas1cs m0d" },
 ac1: { url: "ARC/ac.html", text: "become the crosser" },
 funnyb: { url: "ARC/funnybat.html", text: "you will be a general" },
 skibi: { url: "ARC/skibi.html", text: "kirk sim" },
-
-
+prankc: { url: "ARC/prankc.html", text: "prank call tung god" },
 
 
     // Mobile buttons
