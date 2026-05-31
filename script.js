@@ -183,6 +183,14 @@ swords: { url: "PC/sword.html", text: "sw0rds f1ghting " },
 "slowro": { url: "PC/slowroad.html", text: "drive s1m" },
 "hecker": { url: "PC/heck.html", text: "hecker s1m" },
 
+
+
+
+
+
+
+
+
     // Arcade buttons
     yokedsqrt: { url: "ARC/yokedsqrt.html", text: "get strong and healthy" },
     FNAE: { url: "ARC/FNAE.html", text: "dont let the big e get you" },
@@ -223,6 +231,16 @@ ac1: { url: "ARC/ac.html", text: "become the crosser" },
 funnyb: { url: "ARC/funnybat.html", text: "you will be a general" },
 skibi: { url: "ARC/skibi.html", text: "kirk sim" },
 prankc: { url: "ARC/prankc.html", text: "prank call tung god" },
+
+
+
+
+
+
+
+
+
+
 
 
     // Mobile buttons
@@ -267,6 +285,14 @@ motor2: { url: "MOBILE/motor2.html", text: "you will use a dirt bike" },
 yardsale: { url: "MOBILE/yardsale.html", text: "sell stuff" },
 snak: { url: "MOBILE/snak.html", text: "snake" },
 tomb: { url: "MOBILE/tomb.html", text: "dont implode" },
+
+
+
+
+
+
+
+
 
   };
 
