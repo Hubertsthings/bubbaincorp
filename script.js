@@ -232,8 +232,8 @@ skibi: { url: "ARC/skibi.html", text: "kirk sim" },
 prankc: { url: "ARC/prankc.html", text: "prank call tung god" },
 bankh: { url: "ARC/banksh.html", text: "Fihhhh" },
 fihh: { url: "ARC/fih.html", text: "Fihhhh" },
-
-
+papers: { url: "ARC/papers.html", text: "boarder simulator" },
+meccasnipe: { url: "ARC/meccasnipe.html", text: "find chameleons now" },
 
 
 
@@ -285,7 +285,7 @@ motor2: { url: "MOBILE/motor2.html", text: "you will use a dirt bike" },
 yardsale: { url: "MOBILE/yardsale.html", text: "sell stuff" },
 snak: { url: "MOBILE/snak.html", text: "snake" },
 tomb: { url: "MOBILE/tomb.html", text: "dont implode" },
-
+borange: { url: "MOBILE/borange.html", text: "annoying orange crazy" },
 
 
 
