@@ -182,9 +182,8 @@ swords: { url: "PC/sword.html", text: "sw0rds f1ghting " },
 "bend": { url: "PC/beand.html", text: "the machine of ink" },
 "slowro": { url: "PC/slowroad.html", text: "drive s1m" },
 "hecker": { url: "PC/heck.html", text: "hecker s1m" },
-
-
-
+"dadd": { url: "pc/whodadyou.html", text: "parent prevent death. child do" },
+"slendytub2": { url: "pc/slendytub2.html", text: "teletubbies but slendy" },
 
 
 
@@ -231,7 +230,8 @@ ac1: { url: "ARC/ac.html", text: "become the crosser" },
 funnyb: { url: "ARC/funnybat.html", text: "you will be a general" },
 skibi: { url: "ARC/skibi.html", text: "kirk sim" },
 prankc: { url: "ARC/prankc.html", text: "prank call tung god" },
-
+bankh: { url: "ARC/banksh.html", text: "Fihhhh" },
+fihh: { url: "ARC/fih.html", text: "Fihhhh" },
 
 
 
@@ -519,6 +519,37 @@ fetch("/navbar.html")
     initNavbarButtons();
   })
   .catch(err => console.error("Navbar failed to load:", err));
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  var fps = document.getElementById("fps");
+var startTime = Date.now();
+var frame = 0;
+
+function tick() {
+  var time = Date.now();
+  frame++;
+  if (time - startTime > 1000) {
+      fps.innerHTML = (frame / ((time - startTime) / 1000)).toFixed(1);
+      startTime = time;
+      frame = 0;
+	}
+  window.requestAnimationFrame(tick);
+}
+tick();
+
+
+
 
 
 
