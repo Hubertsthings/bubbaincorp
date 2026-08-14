@@ -286,7 +286,7 @@ yardsale: { url: "MOBILE/yardsale.html", text: "sell stuff" },
 snak: { url: "MOBILE/snak.html", text: "snake" },
 tomb: { url: "MOBILE/tomb.html", text: "dont implode" },
 borange: { url: "MOBILE/borange.html", text: "annoying orange crazy" },
-
+borange: { url: "MOBILE/borange.html", text: "a" },
 
 
 
