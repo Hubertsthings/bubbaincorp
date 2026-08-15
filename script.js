@@ -15,6 +15,19 @@
 
 
 
+return new Response(html, {
+  headers: {
+    "Content-Type": "text/html",
+    "X-Frame-Options": "ALLOWALL"
+  }
+});
+
+
+
+
+
+
+
 
 
 // Function used by navbar button
