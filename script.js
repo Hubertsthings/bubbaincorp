@@ -15,14 +15,6 @@
 
 
 
-return new Response(html, {
-  headers: {
-    "Content-Type": "text/html",
-    "X-Frame-Options": "ALLOWALL"
-  }
-});
-
-
 
 
 
