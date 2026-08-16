@@ -557,3 +557,154 @@ tick();
 
 
 
+
+
+
+
+
+
+const FAVORITES_KEY = "bubbaFavorites";
+
+function getFavorites() {
+  try {
+    return JSON.parse(localStorage.getItem(FAVORITES_KEY)) || [];
+  } catch {
+    return [];
+  }
+}
+
+function saveFavorites(list) {
+  localStorage.setItem(FAVORITES_KEY, JSON.stringify(list));
+}
+
+function showFavoriteToast(message) {
+  const toast = document.getElementById("favoriteToast");
+  if (!toast) return;
+
+  toast.textContent = message;
+  toast.classList.add("show");
+
+  setTimeout(() => {
+    toast.classList.remove("show");
+  }, 1800);
+}
+
+function renderFavorites() {
+  const list = document.getElementById("favoritesList");
+  if (!list) return;
+
+  const favorites = getFavorites();
+
+  if (!favorites.length) {
+    list.innerHTML = "<li style='color:#aaa; padding:8px 0;'>No favorite lessons yet.</li>";
+    return;
+  }
+
+  list.innerHTML = favorites
+    .map(
+      (game) => `
+        <li>
+          <a class="favorite-item" href="${game.href}" target="_blank">${game.title}</a>
+        </li>
+      `
+    )
+    .join("");
+}
+
+function addFavorite(gameButton) {
+  if (!gameButton) return;
+
+  const title = (gameButton.textContent || "").trim();
+  const href = gameButton.getAttribute("href") || "#";
+
+  if (!title || href === "#") return;
+
+  const favorites = getFavorites();
+  const alreadyExists = favorites.some(
+    (game) => game.title === title && game.href === href
+  );
+
+  if (alreadyExists) {
+    showFavoriteToast(`${title} is already in your favorites.`);
+    return;
+  }
+
+  favorites.push({ title, href });
+  saveFavorites(favorites);
+  renderFavorites();
+  showFavoriteToast(`${title} was favorited and is now in your favorites.`);
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  const toggleBtn = document.getElementById("favoritesToggle");
+  const menu = document.getElementById("favoritesMenu");
+
+  if (toggleBtn && menu) {
+    toggleBtn.addEventListener("click", () => {
+      menu.classList.toggle("hidden");
+      renderFavorites();
+    });
+  }
+
+  const gameButtons = document.querySelectorAll(".mathbutton");
+
+  gameButtons.forEach((button) => {
+    button.addEventListener("contextmenu", (event) => {
+      event.preventDefault();
+      addFavorite(button);
+    });
+  });
+
+  renderFavorites();
+});
+
+
+
+
+function removeFavoriteByHref(href) {
+  const favorites = getFavorites();
+  const filtered = favorites.filter(game => game.href !== href);
+  saveFavorites(filtered);
+  renderFavorites();
+  showFavoriteToast("lesson removed from favorites.");
+}
+
+function renderFavorites() {
+  const list = document.getElementById("favoritesList");
+  if (!list) return;
+
+  const favorites = getFavorites();
+
+  if (!favorites.length) {
+    list.innerHTML = "<li style='color:#aaa; padding:8px 0;'>No favorite lessons yet.</li>";
+    return;
+  }
+
+  list.innerHTML = favorites
+    .map((game) => `
+      <li style="display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:8px;">
+        <a class="favorite-item" href="${game.href}" target="_blank" style="flex:1;">${game.title}</a>
+        <button class="remove-favorite-btn" data-href="${game.href}" style="
+          background:#ff4d4d;
+          color:white;
+          border:none;
+          border-radius:6px;
+          padding:6px 10px;
+          cursor:pointer;
+        ">Remove</button>
+      </li>
+    `)
+    .join("");
+
+  document.querySelectorAll(".remove-favorite-btn").forEach(button => {
+    button.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      removeFavoriteByHref(button.dataset.href);
+    });
+  });
+}
+
+
+
+

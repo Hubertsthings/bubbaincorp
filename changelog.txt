@@ -18,7 +18,7 @@
 ! all broken pc apps marked to be fixed
 ! all broken arc marked to be fixed as well
 
-
++ NEW favoriting system
 
 
 
