@@ -6,7 +6,17 @@
 / replacement for buch0t roulett3. 
 + fixed clover p1t
 - bull3t forc3 (was always broken)
+- skibidi sh00ter (no)
+- fnaf stuff as they will all be combined
++ fixed blockbl@st
++ fixed pvz2
++ fixed drive mad
++ fixed animal cr0ss1ng
++ fixed poly tr@ck
++ fixed inf craft
 
+! all broken pc apps marked to be fixed
+! all broken arc marked to be fixed as well
 
 
 
