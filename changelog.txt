@@ -2,6 +2,11 @@
 - WindowBar (no support)
 + new launcher
 ! fixing broken lessons
++ fixed ultra k!11
+/ replacement for buch0t roulett3. 
++ fixed clover p1t
+- bull3t forc3 (was always broken)
+
 
 
 
