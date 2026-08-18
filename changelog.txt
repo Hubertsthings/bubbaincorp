@@ -1,8 +1,8 @@
 8/17/26
-+ fixed 2 apps
++ fixed 2 apps (karlson and fnof)
 + fnaf 1,2,3,4 and world 
-
-
++ poly track 2 (new ver)
++ n-gon
 
 
 
