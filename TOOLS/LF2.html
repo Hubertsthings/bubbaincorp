@@ -6,7 +6,7 @@
 
 <link rel="stylesheet" href="/styles.css">
 
-<title>Bubba Incorporated</title>
+<title> Lesson Finder </title>
 
 <link rel="icon" type="images/png" href="/images/favicon.png">
 
@@ -14,12 +14,11 @@
 lessons. These include, Algebra, English, Government, and Science.">
 
 
-
 </head>
 <body>
 
 <!-- launch navbar -->
-<div id="navbar-container"></div>
+<div id="navbar-container"> </div>
 <script>
   // Make sure path is correct relative to this page
   fetch("/navbar.html")  
@@ -50,18 +49,63 @@ document.addEventListener("DOMContentLoaded", loadNavbar);
 <!-- end of nav bar and stuff-->
 
 
-<h2> Bubba premium 💸</h2>
+<!-- replace EXAMPLE.HTML with app in 'Apps' folder -->
 
-<p> Apps [ $20 / minute]</p>
-<div class="row-seperator">
-<a href="bubba premium/Bubbaleg.html" class="mathbutton"  > v1 bubba home</a>
 
-<a href="bubba premium/Bubbaold.html" class="mathbutton"  > v2 bubba home </a>
 
-<a href="TOOLS/LF2.html" class="mathbutton" title="pr0x¥" > Lesson Finder beta  </a>
+
+<div class="container">
+
+
+
+
+
+<iframe 
+src="https://lessonfinder.wasmer.app/"
+class="lesson-frame"
+allowfullscreen>
+</iframe>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!--alternative web search for now-->
+
+<style>
+.container {
+    position: relative;
+    width: 100%; 
+    height: 300px;
+}
+
+.iframe {
+    width: 100%;
+    height: 100%;
+    border: none; 
+}
+
+.overlay-text {
+    position: absolute;
+    top: -40px; 
+    left: 400px; 
+    z-index: 10987676; 
+    color: white; 
+   
+    padding: 10px; 
+}
+
+</style>
+    <div class="overlay-text">alternative until original is fixed</div>
 </div>
 
-
-
 </body>
-</html>
+</html> 
