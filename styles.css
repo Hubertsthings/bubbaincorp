@@ -345,14 +345,14 @@ html, body {
 
 #closeBtn {
   position: absolute;
-  top: 5px;
-  right: 10px;
+  top: 2px;
+  right: 2px;
   cursor: pointer;
-  font-size: 18px;
+  font-size: 14px;
   background: red;
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 9px;
 }
 
 
