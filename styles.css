@@ -549,7 +549,7 @@ html, body {
 
 .favorite-toast {
   position: fixed;
-  bottom: 950px;
+  bottom: 20px;
   left: 50%;
   transform: translateX(-50%) translateY(-120px);
   background: #1f1f1f;
