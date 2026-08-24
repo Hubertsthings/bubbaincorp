@@ -190,6 +190,9 @@ swords: { url: "PC/sword.html", text: "sw0rds f1ghting " },
 "dadd": { url: "pc/whodadyou.html", text: "parent prevent death. child do" },
 "slendytub2": { url: "pc/slendytub2.html", text: "teletubbies but slendy" },
 
+"bta3": { url: "PC/bta2.html", text: "theft of grand" },
+"scpcb": { url: "PC/scb.html", text: "escape from scary place" },
+"60s": { url: "pc/60s.html", text: "survive kim jong un's nuke" },
 
 
 
