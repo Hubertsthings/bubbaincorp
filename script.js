@@ -194,6 +194,7 @@ swords: { url: "PC/sword.html", text: "sw0rds f1ghting " },
 "scpcb": { url: "PC/scb.html", text: "escape from scary place" },
 "60s": { url: "pc/60s.html", text: "survive kim jong un's nuke" },
 
+"dokidlc": { url: "pc/ddlc.html", text: "you must read books" },
 
 
 
