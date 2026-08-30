@@ -243,7 +243,6 @@ bankh: { url: "ARC/banksh.html", text: "Fihhhh" },
 fihh: { url: "ARC/fih.html", text: "Fihhhh" },
 papers: { url: "ARC/papers.html", text: "boarder simulator" },
 meccasnipe: { url: "ARC/meccasnipe.html", text: "find chameleons now" },
-mario: { url: "ARC/super64.html", text: "save her now" },
 time: { url: "ARC/ovoftime.html", text: "save zelda" },
 
 
