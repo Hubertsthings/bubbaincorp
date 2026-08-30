@@ -195,7 +195,7 @@ swords: { url: "PC/sword.html", text: "sw0rds f1ghting " },
 "dokidlc": { url: "pc/ddlc.html", text: "you must read books" },
 "digging": { url: "pc/dig.html", text: "it is time to dig out of pr1son" },
 "number": { url: "pc/numbersf.html", text: "crafting numbers or something" },
-
+"hotdog": { url: "pc/hotdogsmad.html", text: "this is awesome" },
 
 
 
