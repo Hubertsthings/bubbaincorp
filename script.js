@@ -196,7 +196,7 @@ swords: { url: "PC/sword.html", text: "sw0rds f1ghting " },
 
 "dokidlc": { url: "pc/ddlc.html", text: "you must read books" },
 
-
+"digging": { url: "pc/dig.html", text: "it is time to dig out of pr1son" },
 
 
     // Arcade buttons
