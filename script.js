@@ -246,7 +246,7 @@ fihh: { url: "ARC/fih.html", text: "Fihhhh" },
 papers: { url: "ARC/papers.html", text: "boarder simulator" },
 meccasnipe: { url: "ARC/meccasnipe.html", text: "find chameleons now" },
 time: { url: "ARC/ocoftime.html", text: "save zelda" },
-
+running: { url: "ARC/runcreepy.html", text: "you gotta run bro" },
 
 
 
