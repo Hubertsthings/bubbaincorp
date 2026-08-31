@@ -197,6 +197,7 @@ swords: { url: "PC/sword.html", text: "sw0rds f1ghting " },
 "number": { url: "pc/numbersf.html", text: "crafting numbers or something" },
 "hotdog": { url: "pc/hotdogsmad.html", text: "this is awesome" },
 "wackboss": { url: "pc/wackyourboss.html", text: "be@t the b0ss right now" },
+"lacys": { url: "pc/lacysgames.html", text: "time to flash" },
 
 
 
