@@ -299,7 +299,7 @@ snak: { url: "MOBILE/snak.html", text: "snake" },
 tomb: { url: "MOBILE/tomb.html", text: "dont implode" },
 borange: { url: "MOBILE/borange.html", text: "annoying orange crazy" },
 johnt: { url: "MOBILE/johnnytr.html", text: "end them all." },
-
+watio: { url: "MOBILE/waterio.html", text: "ITS TIME TO SW1M" },
 
 
 
