@@ -201,6 +201,19 @@ swords: { url: "PC/sword.html", text: "sw0rds f1ghting " },
 "cgolf": { url: "pc/ucatgolf.html", text: "lets go golfing?" },
 "grany": { url: "pc/gran.html", text: "escape the house." },
 "undty": { url: "pc/underty.html", text: "it is time to go." },
+"ironl": { url: "pc/iron1.html", text: "ocean gate experience" },
+"undery": { url: "pc/underty.html", text: "undertale but yellow" },
+
+
+
+
+
+
+
+
+
+
+
 
     // Arcade buttons
     yokedsqrt: { url: "ARC/yokedsqrt.html", text: "get strong and healthy" },
@@ -675,6 +688,26 @@ function removeFavoriteByHref(href) {
   showFavoriteToast("lesson removed from favorites.");
 }
 
+function findFavoriteGame(game) {
+  const favoriteUrl = new URL(game.href, window.location.href).href;
+
+  return Array.from(document.querySelectorAll(".mathbutton")).find(button => {
+    const buttonUrl = button.href ? new URL(button.href, window.location.href).href : "";
+    return buttonUrl === favoriteUrl && button.textContent.trim() === game.title;
+  });
+}
+
+function focusFavoriteGame(game) {
+  const gameButton = findFavoriteGame(game);
+  if (!gameButton) return;
+
+  document.getElementById("favoritesMenu")?.classList.add("hidden");
+  gameButton.scrollIntoView({ behavior: "smooth", block: "center" });
+  gameButton.classList.remove("favorite-game-highlight");
+  void gameButton.offsetWidth;
+  gameButton.classList.add("favorite-game-highlight");
+}
+
 function renderFavorites() {
   const list = document.getElementById("favoritesList");
   if (!list) return;
@@ -701,6 +734,16 @@ function renderFavorites() {
       </li>
     `)
     .join("");
+
+  document.querySelectorAll(".favorite-item").forEach((link, index) => {
+    link.addEventListener("click", (event) => {
+      const game = favorites[index];
+      if (!findFavoriteGame(game)) return;
+
+      event.preventDefault();
+      focusFavoriteGame(game);
+    });
+  });
 
   document.querySelectorAll(".remove-favorite-btn").forEach(button => {
     button.addEventListener("click", (e) => {
