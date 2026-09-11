@@ -1,11 +1,18 @@
+9/10/26
++ kirks resurrection 
++ among us
++ readable names
++ restored mascot image to look like original google sites layout.
++ repo
++ back rooms 3d
+
+
+
+
 9/7/26
 + one shot wme
 + granny
 + iron lung
-
-
-
-
 
 
 
@@ -23,19 +30,11 @@
 
 
 
-
-
-
-
 8/27/26
 + cup h3ad
 + dl for drift hunters
 + ph (pizza hut)
 + fixed soundboard i think
-
-
-
-
 
 
 
@@ -47,8 +46,6 @@
 + fixed kindergarten
 + added download for slendy tubbies 2
 + added page for non shovelware pc stuff
-
-
 
 
 
@@ -65,7 +62,6 @@
 + fnaf 1,2,3,4 and world 
 + poly track 2 (new ver)
 + n-gon
-
 
 
 

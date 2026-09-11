@@ -203,7 +203,7 @@ swords: { url: "PC/sword.html", text: "sw0rds f1ghting " },
 "undty": { url: "pc/underty.html", text: "it is time to go." },
 "ironl": { url: "pc/iron1.html", text: "ocean gate experience" },
 "undery": { url: "pc/underty.html", text: "undertale but yellow" },
-
+"rep1": { url: "pc/rep.html", text: "be android and survive from apple" },
 
 
 
@@ -261,8 +261,8 @@ papers: { url: "ARC/papers.html", text: "boarder simulator" },
 meccasnipe: { url: "ARC/meccasnipe.html", text: "find chameleons now" },
 time: { url: "ARC/ocoftime.html", text: "save zelda" },
 running: { url: "ARC/runcreepy.html", text: "you gotta run bro" },
-date: { url: "ARC/adatewithd.html", text: "d@te them bro" },
-
+date: { url: "ARC/adatewithd.html", text: "?????" },
+backr: { url: "ARC/backrooming.html", text: "survive" },
 
 
 
@@ -313,7 +313,7 @@ tomb: { url: "MOBILE/tomb.html", text: "dont implode" },
 borange: { url: "MOBILE/borange.html", text: "annoying orange crazy" },
 johnt: { url: "MOBILE/johnnytr.html", text: "end them all." },
 watio: { url: "MOBILE/waterio.html", text: "ITS TIME TO SW1M" },
-
+among: { url: "MOBILE/amongsus.html", text: "find bad person" },
 
 
 

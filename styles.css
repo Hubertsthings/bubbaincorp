@@ -164,18 +164,18 @@ body{
     display: flex;
     flex-direction: column; /* stack image and button vertically */
     align-items: flex-end;  /* right-align */
-    margin-top: -30px;
+    margin-top: -60px;
 }
 
 .mascot img {
-    width: 200px; /* or any responsive width */
+    width: 300px; /* or any responsive width */
     max-width: 100%;
     height: auto;
 }
 
 .mascotbutton {
     display: block;
-    width: 200px;              /* takes the width of the parent (.mascot) */
+    width: 300px;              /* takes the width of the parent (.mascot) */
     text-align: center;       /* centers the text */
     background: #002faf;
     color: white;
@@ -200,7 +200,7 @@ body{
 
 .mascotbutton2 {
     display: block;
-    width: 200px;              /* takes the width of the parent (.mascot) */
+    width: 300px;              /* takes the width of the parent (.mascot) */
     text-align: center;       /* centers the text */
     background: #00af83;
     color: white;
@@ -216,8 +216,6 @@ body{
     background: #00a05b;
     transform: scale(1.05);
 }
-
-
 
 
 
@@ -498,6 +496,7 @@ html, body {
   cursor: pointer;
   font-size: 15px;
   margin: 10px 0 20px;
+ 
 }
 
 .favorites-menu {
@@ -604,7 +603,7 @@ html, body {
 
 .favorites-toggle {
     display: block;
-    width: 200px;              /* takes the width of the parent (.mascot) */
+    width: 300px;              /* takes the width of the parent (.mascot) */
     text-align: center;       /* centers the text */
     background: #00af83;
     color: white;
