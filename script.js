@@ -204,7 +204,7 @@ swords: { url: "PC/sword.html", text: "sw0rds f1ghting " },
 "ironl": { url: "pc/iron1.html", text: "ocean gate experience" },
 "undery": { url: "pc/underty.html", text: "undertale but yellow" },
 "rep1": { url: "pc/rep.html", text: "be android and survive from apple" },
-
+"yandere": { url: "pc/yandere.html", text: "idk" },
 
 
 
@@ -263,9 +263,10 @@ time: { url: "ARC/ocoftime.html", text: "save zelda" },
 running: { url: "ARC/runcreepy.html", text: "you gotta run bro" },
 date: { url: "ARC/adatewithd.html", text: "?????" },
 backr: { url: "ARC/backrooming.html", text: "survive" },
-
-
-
+lsoc: { url: "ARC/liquidsoc.html", text: "be messi" },
+brot: { url: "ARC/brot.html", text: "be a potato" },
+cc: { url: "ARC/cookie2.html", text: "click the cookie" },
+hob: { url: "ARC/hob.html", text: "be a hobo" },
 
 
     // Mobile buttons
@@ -314,8 +315,8 @@ borange: { url: "MOBILE/borange.html", text: "annoying orange crazy" },
 johnt: { url: "MOBILE/johnnytr.html", text: "end them all." },
 watio: { url: "MOBILE/waterio.html", text: "ITS TIME TO SW1M" },
 among: { url: "MOBILE/amongsus.html", text: "find bad person" },
-
-
+yohoho: { url: "MOBILE/yohoho.html", text: "be a pirate" },
+gbase: { url: "MOBILE/gbase.html", text: "google baseball" },
 
 
   };
