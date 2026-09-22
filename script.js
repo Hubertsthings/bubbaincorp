@@ -205,8 +205,8 @@ swords: { url: "PC/sword.html", text: "sw0rds f1ghting " },
 "undery": { url: "pc/underty.html", text: "undertale but yellow" },
 "rep1": { url: "pc/rep.html", text: "be android and survive from apple" },
 "yandere": { url: "pc/yandere.html", text: "idk" },
-
-
+"cluster": { url: "pc/cluster1.html", text: "dont fall ofrf the trucks" },
+"goi": { url: "pc/goi.html", text: "get over the mountains" },
 
 
 
@@ -538,10 +538,22 @@ fetch("/navbar.html")
   .then(data => {
     document.getElementById("navbar-container").innerHTML = data;
 
+    if (window.location.pathname === "/" || window.location.pathname.endsWith("/index.html")) {
+      const navRight = document.querySelector(".nav-right");
+      if (navRight && !document.getElementById("favoritesNavToggle")) {
+        const favoritesNavToggle = document.createElement("button");
+        favoritesNavToggle.id = "favoritesNavToggle";
+        favoritesNavToggle.className = "nav-button favorites-nav-button";
+        favoritesNavToggle.textContent = "Favorite apps";
+        navRight.insertBefore(favoritesNavToggle, navRight.firstElementChild);
+      }
+    }
+
     // IMPORTANT
     initNavbar();
     initNavbarDropdown();
     initNavbarButtons();
+    initFavoritesToggle();
   })
   .catch(err => console.error("Navbar failed to load:", err));
 
@@ -656,15 +668,7 @@ function addFavorite(gameButton) {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  const toggleBtn = document.getElementById("favoritesToggle");
-  const menu = document.getElementById("favoritesMenu");
-
-  if (toggleBtn && menu) {
-    toggleBtn.addEventListener("click", () => {
-      menu.classList.toggle("hidden");
-      renderFavorites();
-    });
-  }
+  initFavoritesToggle();
 
   const gameButtons = document.querySelectorAll(".mathbutton");
 
@@ -687,6 +691,21 @@ function removeFavoriteByHref(href) {
   saveFavorites(filtered);
   renderFavorites();
   showFavoriteToast("lesson removed from favorites.");
+}
+
+function initFavoritesToggle() {
+  const menu = document.getElementById("favoritesMenu");
+  if (!menu) return;
+
+  document.querySelectorAll("#favoritesToggle, #favoritesNavToggle").forEach((toggleBtn) => {
+    if (toggleBtn.dataset.favoritesBound === "true") return;
+
+    toggleBtn.addEventListener("click", () => {
+      menu.classList.toggle("hidden");
+      renderFavorites();
+    });
+    toggleBtn.dataset.favoritesBound = "true";
+  });
 }
 
 function findFavoriteGame(game) {

@@ -488,8 +488,8 @@ html, body {
 
 
 .favorites-toggle {
-  background: #00af83;
-  color: white;
+  background: #00ffbf;
+  color: rgb(163, 48, 48);
   border: none;
   border-radius: 8px;
   padding: 10px 18px;
@@ -564,8 +564,8 @@ html, body {
   bottom: 20px;
   left: 50%;
   transform: translateX(-50%) translateY(-120px);
-  background: #1f1f1f;
-  color: rgb(1, 69, 255);
+  background: #6b6b6b;
+  color: rgb(41, 4, 250);
   font-size: 18px;
   padding: 12px 18px;
   border-radius: 8px;
@@ -578,7 +578,7 @@ html, body {
 
   
   background: rgba(255, 255, 255, 0.035);
-  backdrop-filter: blur(5px);
+  backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(12px);
 }
 
@@ -612,6 +612,13 @@ html, body {
     margin-top: 10px;         /* spacing under image */
     text-decoration: none;
     font-size: 15px;
+}
+
+.nav-right .favorites-nav-button {
+  width: auto;
+  margin: 0 1px 0 0;
+  padding: 8px 12px;
+  color: rgb(0, 0, 0);
 }
 
 .favorites-menu {
