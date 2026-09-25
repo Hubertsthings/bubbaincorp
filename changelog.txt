@@ -4,9 +4,11 @@
 + moved favorites
 + getting over it
 + learn to fly 2
++ pegged
 
 
-
+acually another day. ill need to rewrite the js for some stuff like navbar
+let me push the proxy stuff to wamer rq
 
 9/15/26
 + liquid soccer

@@ -207,7 +207,7 @@ swords: { url: "PC/sword.html", text: "sw0rds f1ghting " },
 "yandere": { url: "pc/yandere.html", text: "idk" },
 "cluster": { url: "pc/cluster1.html", text: "dont fall ofrf the trucks" },
 "goi": { url: "pc/goi.html", text: "get over the mountains" },
-
+"pegs": { url: "pc/peggles.html", text: "pop them pegs" },
 
 
 
