@@ -267,7 +267,11 @@ lsoc: { url: "ARC/liquidsoc.html", text: "be messi" },
 brot: { url: "ARC/brot.html", text: "be a potato" },
 cc: { url: "ARC/cookie2.html", text: "click the cookie" },
 hob: { url: "ARC/hob.html", text: "be a hobo" },
+grasss: { url: "ARC/grassmow.html", text: "mow stone of grass" },
 learn: { url: "ARC/learntf2.html", text: "learn to fly now" },
+tboi: { url: "ARC/tboiwrath.html", text: "time to bind" },
+
+
 
     // Mobile buttons
     drialge: { url: "MOBILE/drive-algebra.html", text: "big truck and do stuff" },
