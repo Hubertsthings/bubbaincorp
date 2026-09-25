@@ -209,7 +209,7 @@ swords: { url: "PC/sword.html", text: "sw0rds f1ghting " },
 "goi": { url: "pc/goi.html", text: "get over the mountains" },
 "pegs": { url: "pc/peggles.html", text: "pop them pegs" },
 "forts1": { url: "pc/fortzo.html", text: "survive four nights" },
-
+"raft": { url: "pc/raft.html", text: "survive on a raft" },
 
 
 
@@ -321,7 +321,7 @@ watio: { url: "MOBILE/waterio.html", text: "ITS TIME TO SW1M" },
 among: { url: "MOBILE/amongsus.html", text: "find bad person" },
 yohoho: { url: "MOBILE/yohoho.html", text: "be a pirate" },
 gbase: { url: "MOBILE/gbase.html", text: "google baseball" },
-
+bounce: { url: "MOBILE/bounce.html", text: "bounce rn" },
 
   };
 

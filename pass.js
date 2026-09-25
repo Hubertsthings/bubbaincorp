@@ -4,7 +4,7 @@
     "****": "****",
     "username": "pw1",
     "bob": "cool",
-    "john": "abc123"
+    "sweetiefox": "negro"
   };
 
   function login() {
