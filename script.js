@@ -210,7 +210,7 @@ swords: { url: "PC/sword.html", text: "sw0rds f1ghting " },
 "pegs": { url: "pc/peggles.html", text: "pop them pegs" },
 "forts1": { url: "pc/fortzo.html", text: "survive four nights" },
 "raft": { url: "pc/raft.html", text: "survive on a raft" },
-
+"sm63": { url: "pc/sm63.html", text: "2d sm 64" },
 
 
 
