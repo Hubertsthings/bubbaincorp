@@ -1,14 +1,22 @@
+9/24/26
++ peggle
++ fortzone
++ fixed fnf
+
+
+
+
 9/21/26
 + granny 2
 + cluster trucks
 + moved favorites
 + getting over it
 + learn to fly 2
-+ pegged
 
 
-acually another day. ill need to rewrite the js for some stuff like navbar
-let me push the proxy stuff to wamer rq
+
+might be broken
+
 
 9/15/26
 + liquid soccer
