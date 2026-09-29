@@ -270,8 +270,9 @@ hob: { url: "ARC/hob.html", text: "be a hobo" },
 grasss: { url: "ARC/grassmow.html", text: "mow stone of grass" },
 learn: { url: "ARC/learntf2.html", text: "learn to fly now" },
 tboi: { url: "ARC/tboiwrath.html", text: "time to bind" },
-
-
+tile: { url: "ARC/tile2.html", text: "build a topia" },
+wgh: { url: "ARC/wgh.html", text: "hard on" },
+bb11: { url: "ARC/bb11.html", text: "baseball bros" },
 
     // Mobile buttons
     drialge: { url: "MOBILE/drive-algebra.html", text: "big truck and do stuff" },
@@ -612,6 +613,7 @@ function getFavorites() {
 function saveFavorites(list) {
   localStorage.setItem(FAVORITES_KEY, JSON.stringify(list));
 }
+
 
 function showFavoriteToast(message) {
   const toast = document.getElementById("favoriteToast");
