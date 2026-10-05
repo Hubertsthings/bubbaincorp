@@ -212,8 +212,8 @@ swords: { url: "PC/sword.html", text: "sw0rds f1ghting " },
 "raft": { url: "pc/raft.html", text: "survive on a raft" },
 "sm63": { url: "pc/sm63.html", text: "2d sm 64" },
 "gary": { url: "pc/garysmod.html", text: "garying my mod rn" },
-
-
+"lc1": { url: "pc/lc1.html", text: "company thats lethal" },
+"cq": { url: "pc/cq.html", text: "cruelty squad" },
 
     // Arcade buttons
     yokedsqrt: { url: "ARC/yokedsqrt.html", text: "get strong and healthy" },
@@ -273,6 +273,7 @@ tboi: { url: "ARC/tboiwrath.html", text: "time to bind" },
 tile: { url: "ARC/tile2.html", text: "build a topia" },
 wgh: { url: "ARC/wgh.html", text: "hard on" },
 bb11: { url: "ARC/bb11.html", text: "baseball bros" },
+
 
     // Mobile buttons
     drialge: { url: "MOBILE/drive-algebra.html", text: "big truck and do stuff" },

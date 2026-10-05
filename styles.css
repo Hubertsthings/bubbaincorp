@@ -36,6 +36,11 @@ body{
 .home img{
     height:50px;
     width:auto;
+  transition:transform 0.2s ease;
+}
+
+.home img:hover{
+  transform:scale(1.08);
 }
 
 .site-name{
