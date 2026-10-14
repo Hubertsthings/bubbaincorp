@@ -39,39 +39,19 @@ function initNavbar() {
 
 function openAboutBlankPage() {
     const choice = prompt(
-      "Choose for A:B cloak. each represents the starting nuumber of your domain. (ex domain # = #.com):\n" +
-      "1 -  domain 1\n" +
-      "2 -  domain 2\n" +
-      "3 -  domain 3\n" +
-      "4 -  download site\n" +
-      "5 -  soon\n" +
-      "6 - Enter custom URL"
+      
+      "1 - Enter custom URL"
     );
     if (!choice) return;
 
     let url;
     switch (choice.trim()) {
       case "1":
-        url = "https://1.1backup5acc.workers.dev/";
-        break;
-      case "2":
-        url = "https://2.1backup5acc.workers.dev/";
-        break;
-      case "3":
-        url = "https://3.1backup5acc.workers.dev/";
-        break;
-      case "4":
-        url = "https://liveschool.shshnsjsue.workers.dev/";
-        break;
-      case "5":
-        url = "https://5.bubbaincorp.workers.dev";
-        break;
-      case "6":
         url = prompt("Enter the site URL to open in about:blank:");
         if (!url) return;
         break;
       default:
-        alert(" Choose 1, 2, 3, or 4. not what you typed in");
+        alert(" Choose 6 ");
         return;
     }
 
@@ -118,6 +98,33 @@ function initNavbarButtons() {
     if (opt1Main) opt1Main.addEventListener("click", openAboutBlankPage);
     if (op2) op2.addEventListener("click", openABConverter);
 }
+
+async function toggleGameFullscreen() {
+    if (!document.fullscreenEnabled && !document.fullscreenElement) {
+        alert("Fullscreen is not supported by this browser.");
+        return;
+    }
+
+    try {
+        if (document.fullscreenElement) {
+            await document.exitFullscreen();
+        } else {
+            await document.documentElement.requestFullscreen();
+        }
+    } catch (error) {
+        console.error("Could not change fullscreen mode:", error);
+        alert("Could not change fullscreen mode. Your browser may block this action.");
+    }
+}
+
+document.addEventListener("fullscreenchange", () => {
+    const button = document.getElementById("gameFullscreenButton");
+    if (button) {
+        const isFullscreen = Boolean(document.fullscreenElement);
+        button.textContent = isFullscreen ? "Exit fullscreen" : "Fullscreen";
+        button.setAttribute("aria-pressed", String(isFullscreen));
+    }
+});
 
 // Load navbar dynamically
 
@@ -273,7 +280,7 @@ tboi: { url: "ARC/tboiwrath.html", text: "time to bind" },
 tile: { url: "ARC/tile2.html", text: "build a topia" },
 wgh: { url: "ARC/wgh.html", text: "hard on" },
 bb11: { url: "ARC/bb11.html", text: "baseball bros" },
-
+ftbr: { url: "ARC/ftbr.html", text: "football that has bros" },
 
     // Mobile buttons
     drialge: { url: "MOBILE/drive-algebra.html", text: "big truck and do stuff" },
@@ -780,7 +787,5 @@ function renderFavorites() {
     });
   });
 }
-
-
 
 

@@ -54,18 +54,21 @@ body{
 .nav-right {
     display: flex;
     align-items: center;
+    gap: 10px;
 }
 
 /* button styling */
 .nav-button {
     background: #ffffff;
     color: rgb(0, 0, 0);
-    padding: 8px 14px;
+    padding: 10px 16px;
+    border: none;
     border-radius: 6px;
     text-decoration: none;
-    font-size: 14px;
-    margin-left: 10px; /* spacing from edge */
+    font-size: 15px;
+    margin: 0;
     transition: 0.2s;
+    cursor: pointer;
 }
 
 
@@ -108,6 +111,11 @@ body{
     width:100%;
     height:calc(100vh - 60px);
     border:none;
+}
+
+.lesson-frame:fullscreen{
+    width:100vw;
+    height:100vh;
 }
 
 
@@ -466,6 +474,26 @@ html, body {
   padding-left: 15px;
 }
 
+.dropdown-menu-button {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 18px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: rgb(255, 255, 255);
+  text-align: left;
+  font-family: inherit;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s ease, padding-left 0.2s ease;
+}
+
+.dropdown-menu-button:hover {
+  background-color: #123a5c5d;
+  padding-left: 15px;
+}
 
 
 .dropdown-content.show {
@@ -619,13 +647,6 @@ html, body {
     font-size: 15px;
 }
 
-.nav-right .favorites-nav-button {
-  width: auto;
-  margin: 0 1px 0 0;
-  padding: 8px 12px;
-  color: rgb(0, 0, 0);
-}
-
 .favorites-menu {
   position: fixed;
   right: 20px;
@@ -680,4 +701,3 @@ html, body {
   cursor: pointer;
   line-height: 1;
 }
-

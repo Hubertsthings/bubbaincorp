@@ -1,3 +1,11 @@
+10/13/26
++ fixed lesson finder favorite stuff
++ minecraft 1.20 on site
++ updated old fullscreen system (now in menu)
++ fixed super mario 63
++ football bros
+
+
 10/12/26
 + updated lesson finder
 --- + added favoriting websites
