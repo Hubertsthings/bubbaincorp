@@ -99,32 +99,26 @@ function initNavbarButtons() {
     if (op2) op2.addEventListener("click", openABConverter);
 }
 
-async function toggleGameFullscreen() {
-    if (!document.fullscreenEnabled && !document.fullscreenElement) {
-        alert("Fullscreen is not supported by this browser.");
-        return;
-    }
 
+  const button = document.getElementById("fullscreenBtn");
+
+  button.addEventListener("click", async () => {
     try {
-        if (document.fullscreenElement) {
-            await document.exitFullscreen();
-        } else {
-            await document.documentElement.requestFullscreen();
-        }
+      if (!document.fullscreenElement) {
+        await document.documentElement.requestFullscreen();
+      } else {
+        await document.exitFullscreen();
+      }
     } catch (error) {
-        console.error("Could not change fullscreen mode:", error);
-        alert("Could not change fullscreen mode. Your browser may block this action.");
+      console.error("Could not enter fullscreen/not supported:", error);
     }
-}
+  });
 
-document.addEventListener("fullscreenchange", () => {
-    const button = document.getElementById("gameFullscreenButton");
-    if (button) {
-        const isFullscreen = Boolean(document.fullscreenElement);
-        button.textContent = isFullscreen ? "Exit fullscreen" : "Fullscreen";
-        button.setAttribute("aria-pressed", String(isFullscreen));
-    }
-});
+  document.addEventListener("fullscreenchange", () => {
+    button.textContent = document.fullscreenElement
+      ? "Exit full screen"
+      : "Go full screen";
+  });
 
 // Load navbar dynamically
 
