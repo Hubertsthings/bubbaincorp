@@ -13,6 +13,108 @@
 
 }
 
+let fpsCounterState = null;
+
+function initFpsCounter(toggle = document.getElementById("fpsCounterToggle")) {
+  if (!toggle || toggle.dataset.fpsCounterBound === "true") return;
+
+  if (!fpsCounterState) {
+    const counter = document.createElement("div");
+    counter.id = "fps-counter";
+    counter.className = "fps-counter";
+    counter.setAttribute("role", "status");
+    counter.setAttribute("aria-label", "Frames per second");
+    counter.setAttribute("aria-live", "off");
+    counter.textContent = "FPS: --";
+    counter.hidden = true;
+    document.body.appendChild(counter);
+
+    fpsCounterState = {
+      counter,
+      enabled: false,
+      animationFrame: null,
+      frameCount: 0,
+      lastUpdate: 0,
+      toggle: null
+    };
+
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) {
+        stopFpsCounter();
+      } else {
+        startFpsCounter();
+      }
+    });
+  }
+
+  fpsCounterState.toggle = toggle;
+  toggle.dataset.fpsCounterBound = "true";
+  toggle.addEventListener("click", () => {
+    fpsCounterState.enabled = !fpsCounterState.enabled;
+    updateFpsCounterToggle();
+
+    if (fpsCounterState.enabled) {
+      startFpsCounter();
+    } else {
+      stopFpsCounter();
+    }
+  });
+
+  updateFpsCounterToggle();
+  startFpsCounter();
+}
+
+function updateFpsCounterToggle() {
+  if (!fpsCounterState) return;
+  fpsCounterState.toggle.setAttribute("aria-pressed", String(fpsCounterState.enabled));
+  fpsCounterState.toggle.textContent = `FPS counter: ${fpsCounterState.enabled ? "On" : "Off"}`;
+  fpsCounterState.counter.hidden = !fpsCounterState.enabled;
+}
+
+function stopFpsCounter() {
+  if (!fpsCounterState) return;
+  if (fpsCounterState.animationFrame !== null) {
+    cancelAnimationFrame(fpsCounterState.animationFrame);
+    fpsCounterState.animationFrame = null;
+  }
+  fpsCounterState.frameCount = 0;
+  fpsCounterState.lastUpdate = 0;
+}
+
+function measureFps(timestamp) {
+  fpsCounterState.animationFrame = null;
+  if (!fpsCounterState.enabled || document.hidden) return;
+
+  fpsCounterState.frameCount += 1;
+  if (fpsCounterState.lastUpdate === 0) {
+    fpsCounterState.lastUpdate = timestamp;
+  } else if (timestamp - fpsCounterState.lastUpdate >= 1000) {
+    fpsCounterState.counter.textContent = `FPS: ${Math.round(fpsCounterState.frameCount * 1000 / (timestamp - fpsCounterState.lastUpdate))}`;
+    fpsCounterState.frameCount = 0;
+    fpsCounterState.lastUpdate = timestamp;
+  }
+
+  fpsCounterState.animationFrame = requestAnimationFrame(measureFps);
+}
+
+function startFpsCounter() {
+  if (fpsCounterState?.enabled && !document.hidden && fpsCounterState.animationFrame === null) {
+    fpsCounterState.frameCount = 0;
+    fpsCounterState.lastUpdate = 0;
+    fpsCounterState.animationFrame = requestAnimationFrame(measureFps);
+  }
+}
+
+const fpsCounterObserver = new MutationObserver(() => {
+  const toggle = document.getElementById("fpsCounterToggle");
+  if (toggle && toggle !== fpsCounterState?.toggle) initFpsCounter(toggle);
+});
+const navbarObserverTarget = document.getElementById("navbar-container") || document.documentElement;
+fpsCounterObserver.observe(navbarObserverTarget, { childList: true, subtree: true });
+
+const existingFpsToggle = document.getElementById("fpsCounterToggle");
+if (existingFpsToggle) initFpsCounter(existingFpsToggle);
+
 
 
 
@@ -579,8 +681,6 @@ function initNavbarDropdown() {
   initNavbarButtons();
 }
 
-
-
 fetch("/navbar.html")
   .then(res => res.text())
   .then(data => {
@@ -602,6 +702,7 @@ fetch("/navbar.html")
     initNavbarDropdown();
     initNavbarButtons();
     initFavoritesToggle();
+    initFpsCounter();
   })
   .catch(err => console.error("Navbar failed to load:", err));
 
@@ -609,32 +710,6 @@ fetch("/navbar.html")
 
 
   
-
-
-
-
-
-
-
-
-  var fps = document.getElementById("fps");
-var startTime = Date.now();
-var frame = 0;
-
-function tick() {
-  var time = Date.now();
-  frame++;
-  if (time - startTime > 1000) {
-      fps.innerHTML = (frame / ((time - startTime) / 1000)).toFixed(1);
-      startTime = time;
-      frame = 0;
-	}
-  window.requestAnimationFrame(tick);
-}
-tick();
-
-
-
 
 
 
