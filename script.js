@@ -100,16 +100,30 @@ function initNavbarButtons() {
 }
 
 async function toggleGameFullscreen() {
-    if (!document.fullscreenEnabled && !document.fullscreenElement) {
+    const root = document.documentElement;
+    const fullscreenElement = document.fullscreenElement
+        || document.webkitFullscreenElement
+        || document.webkitCurrentFullScreenElement
+        || document.msFullscreenElement;
+    const exitFullscreen = document.exitFullscreen
+        || document.webkitExitFullscreen
+        || document.webkitCancelFullScreen
+        || document.msExitFullscreen;
+    const requestFullscreen = root.requestFullscreen
+        || root.webkitRequestFullscreen
+        || root.webkitRequestFullScreen
+        || root.msRequestFullscreen;
+
+    if (fullscreenElement ? !exitFullscreen : !requestFullscreen) {
         alert("Fullscreen is not supported by this browser.");
         return;
     }
 
     try {
-        if (document.fullscreenElement) {
-            await document.exitFullscreen();
+        if (fullscreenElement) {
+            await exitFullscreen.call(document);
         } else {
-            await document.documentElement.requestFullscreen();
+            await requestFullscreen.call(root);
         }
     } catch (error) {
         console.error("Could not change fullscreen mode:", error);
@@ -117,14 +131,33 @@ async function toggleGameFullscreen() {
     }
 }
 
-document.addEventListener("fullscreenchange", () => {
+function updateGameFullscreenButton() {
     const button = document.getElementById("gameFullscreenButton");
     if (button) {
-        const isFullscreen = Boolean(document.fullscreenElement);
+        const isFullscreen = Boolean(
+            document.fullscreenElement
+            || document.webkitFullscreenElement
+            || document.webkitCurrentFullScreenElement
+            || document.msFullscreenElement
+        );
         button.textContent = isFullscreen ? "Exit fullscreen" : "Fullscreen";
         button.setAttribute("aria-pressed", String(isFullscreen));
     }
-});
+}
+
+document.addEventListener("fullscreenchange", updateGameFullscreenButton);
+document.addEventListener("webkitfullscreenchange", updateGameFullscreenButton);
+document.addEventListener("MSFullscreenChange", updateGameFullscreenButton);
+
+
+
+
+
+
+
+
+
+
 
 // Load navbar dynamically
 
@@ -789,3 +822,19 @@ function renderFavorites() {
 }
 
 
+
+
+const button = document.getElementById("fullscreenButton");
+
+  button.addEventListener("click", async () => {
+    try {
+      if (!document.fullscreenElement) {
+        await document.documentElement.requestFullscreen();
+      } else {
+        await document.exitFullscreen();
+      }
+    } catch (error) {
+      console.error("Fullscreen request failed:", error);
+      alert("Fullscreen isn't available in this browser or context.");
+    }
+  });
