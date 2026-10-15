@@ -159,6 +159,8 @@ document.addEventListener("MSFullscreenChange", updateGameFullscreenButton);
 
 
 
+
+
 // Load navbar dynamically
 
 
