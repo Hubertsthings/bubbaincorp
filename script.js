@@ -839,25 +839,3 @@ function renderFavorites() {
     });
   });
 }
-
-
-
-  const button = document.getElementById("fullscreenBtn");
-
-  button.addEventListener("click", async () => {
-    try {
-      if (!document.fullscreenElement) {
-        await document.documentElement.requestFullscreen();
-      } else {
-        await document.exitFullscreen();
-      }
-    } catch (error) {
-      console.error("Could not enter fullscreen:", error);
-    }
-  });
-
-  document.addEventListener("fullscreenchange", () => {
-    button.textContent = document.fullscreenElement
-      ? "Exit full screen"
-      : "Go full screen";
-  });
