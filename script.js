@@ -900,8 +900,7 @@ function renderFavorites() {
 
 
 
-
-const button = document.getElementById("fullscreenButton");
+  const button = document.getElementById("fullscreenBtn");
 
   button.addEventListener("click", async () => {
     try {
@@ -911,7 +910,12 @@ const button = document.getElementById("fullscreenButton");
         await document.exitFullscreen();
       }
     } catch (error) {
-      console.error("Fullscreen request failed:", error);
-      alert("Fullscreen isn't available in this browser or context.");
+      console.error("Could not enter fullscreen:", error);
     }
+  });
+
+  document.addEventListener("fullscreenchange", () => {
+    button.textContent = document.fullscreenElement
+      ? "Exit full screen"
+      : "Go full screen";
   });
