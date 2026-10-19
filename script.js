@@ -201,64 +201,6 @@ function initNavbarButtons() {
     if (op2) op2.addEventListener("click", openABConverter);
 }
 
-async function toggleGameFullscreen() {
-    const root = document.documentElement;
-    const fullscreenElement = document.fullscreenElement
-        || document.webkitFullscreenElement
-        || document.webkitCurrentFullScreenElement
-        || document.msFullscreenElement;
-    const exitFullscreen = document.exitFullscreen
-        || document.webkitExitFullscreen
-        || document.webkitCancelFullScreen
-        || document.msExitFullscreen;
-    const requestFullscreen = root.requestFullscreen
-        || root.webkitRequestFullscreen
-        || root.webkitRequestFullScreen
-        || root.msRequestFullscreen;
-
-    if (fullscreenElement ? !exitFullscreen : !requestFullscreen) {
-        alert("Fullscreen is not supported by this browser.");
-        return;
-    }
-
-    try {
-        if (fullscreenElement) {
-            await exitFullscreen.call(document);
-        } else {
-            await requestFullscreen.call(root);
-        }
-    } catch (error) {
-        console.error("Could not change fullscreen mode:", error);
-        alert("Could not change fullscreen mode. Your browser may block this action.");
-    }
-}
-
-function updateGameFullscreenButton() {
-    const button = document.getElementById("gameFullscreenButton");
-    if (button) {
-        const isFullscreen = Boolean(
-            document.fullscreenElement
-            || document.webkitFullscreenElement
-            || document.webkitCurrentFullScreenElement
-            || document.msFullscreenElement
-        );
-        button.textContent = isFullscreen ? "Exit fullscreen" : "Fullscreen";
-        button.setAttribute("aria-pressed", String(isFullscreen));
-    }
-}
-
-document.addEventListener("fullscreenchange", updateGameFullscreenButton);
-document.addEventListener("webkitfullscreenchange", updateGameFullscreenButton);
-document.addEventListener("MSFullscreenChange", updateGameFullscreenButton);
-
-
-
-
-
-
-
-
-
 
 
 
@@ -897,21 +839,3 @@ function renderFavorites() {
     });
   });
 }
-
-
-
-
-const button = document.getElementById("fullscreenButton");
-
-  button.addEventListener("click", async () => {
-    try {
-      if (!document.fullscreenElement) {
-        await document.documentElement.requestFullscreen();
-      } else {
-        await document.exitFullscreen();
-      }
-    } catch (error) {
-      console.error("Fullscreen request failed:", error);
-      alert("Fullscreen isn't available in this browser or context.");
-    }
-  });
