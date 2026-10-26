@@ -300,7 +300,16 @@ swords: { url: "PC/sword.html", text: "sw0rds f1ghting " },
 "gary": { url: "pc/garysmod.html", text: "garying my mod rn" },
 "lc1": { url: "pc/lc1.html", text: "company thats lethal" },
 "cq": { url: "pc/cq.html", text: "cruelty squad" },
-"ksp": { url: "404.html", text: "used on lesson finder. click on play" },
+"ksp1": { url: "PC/kspela.html", text: "be a rocket scientist" },
+
+
+
+
+
+
+
+
+
     // Arcade buttons
     yokedsqrt: { url: "ARC/yokedsqrt.html", text: "get strong and healthy" },
     FNAE: { url: "ARC/FNAE.html", text: "dont let the big e get you" },
@@ -360,6 +369,14 @@ tile: { url: "ARC/tile2.html", text: "build a topia" },
 wgh: { url: "ARC/wgh.html", text: "hard on" },
 bb11: { url: "ARC/bb11.html", text: "baseball bros" },
 ftbr: { url: "ARC/ftbr.html", text: "football that has bros" },
+doom1: { url: "ARC/doom1.html", text: "doom " },
+
+
+
+
+
+
+
 
     // Mobile buttons
     drialge: { url: "MOBILE/drive-algebra.html", text: "big truck and do stuff" },
