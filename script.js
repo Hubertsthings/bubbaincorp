@@ -857,3 +857,37 @@ function renderFavorites() {
     });
   });
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function initFullscreenButton() {
+  const button = document.getElementById("gameFullscreenButton");
+  if (!button) {
+    console.error('Could not find #gameFullscreenButton');
+    return;
+  }
+
+  button.addEventListener("click", toggleGameFullscreen);
+  updateGameFullscreenButton();
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initFullscreenButton, { once: true });
+} else {
+  initFullscreenButton();
+}
