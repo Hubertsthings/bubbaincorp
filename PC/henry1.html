@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<meta charset="UTF-8">
+
+<link rel="stylesheet" href="/styles.css">
+
+<title>Lessons Online k-12</title>
+
+<link rel="icon" type="images/png" href="/images/favicon.png">
+
+<meta name="description" content="Bubba Inc™ provides a wide selection of educational 
+lessons. These include, Algebra, English, Government, and Science.">
+
+
+
+</head>
+<body>
+
+<!-- launch navbar -->
+<div id="navbar-container"></div>
+<script>
+  // Make sure path is correct relative to this page
+  fetch("/navbar.html")  
+    .then(response => response.text())
+    .then(data => {
+      document.getElementById("navbar-container").innerHTML = data;
+    })
+    .catch(err => console.error("Navbar failed to load:", err));
+
+
+
+    function loadNavbar() {
+  fetch("/navbar.html")
+    .then(res => res.text())
+    .then(data => {
+      document.getElementById("navbar-container").innerHTML = data;
+      initNavbarDropdown();
+    });
+}
+
+document.addEventListener("DOMContentLoaded", loadNavbar);
+
+</script>
+
+<script src="/script.js"></script>
+
+<script src="/panickey.js"></script>
+<!-- end of nav bar and stuff-->
+
+
+
+
+
+
+
+
+<!-- replace EXAMPLE.HTML with app in 'Apps' folder -->
+
+<h2> choose</h2>
+
+
+<!--stick1--->
+<a href="banking.html" class="mathbutton stick0"  > breaking in bank</a>
+<!-------end-->
+<br>
+<!--chomp--->
+<a href="henprison.html" class="mathbutton stick1" > fleeing the prison </a>
+<!-------end--->
+<br>
+
+<!--chomp--->
+<a href="steal.html" class="mathbutton stick4" > steal the diamond </a>
+<!-------end--->
+<br>
+
+<!--chomp--->
+<a href="complex.html" class="mathbutton stick2" > fleeing the complex</a>
+<!-------end--->
+<br>
+<!--chomp--->
+<a href="ship.html" class="mathbutton stick3" > escaping the airship </a>
+<!-------end--->
+<br>
+
+<!--chomp--->
+<a href="ship.html" class="mathbutton stick3" > escaping the airship </a>
+<!-------end--->
+<br>
+
+<!--chomp--->
+<a href="/404.html" class="mathbutton " > more soon </a>
+<!-------end--->
+<br>

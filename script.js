@@ -301,10 +301,11 @@ swords: { url: "PC/sword.html", text: "sw0rds f1ghting " },
 "lc1": { url: "pc/lc1.html", text: "company thats lethal" },
 "cq": { url: "pc/cq.html", text: "cruelty squad" },
 "ksp1": { url: "PC/kspela.html", text: "be a rocket scientist" },
-
-
-
-
+"stick0": { url: "PC/henprison.html", text: "breaking in bank" },
+"stick1": { url: "PC/henprison.html", text: "fleeing the prison" },
+"stick2": { url: "PC/complex.html", text: "fleeing the complex" },
+"stick3": { url: "PC/ship.html", text: "escaping the airship" },
+"stick4": { url: "PC/steal.html", text: "stealing the diamond" },
 
 
 
@@ -370,10 +371,10 @@ wgh: { url: "ARC/wgh.html", text: "hard on" },
 bb11: { url: "ARC/bb11.html", text: "baseball bros" },
 ftbr: { url: "ARC/ftbr.html", text: "football that has bros" },
 doom1: { url: "ARC/doom1.html", text: "doom " },
-
-
-
-
+jellyd: { url: "ARC/jellyd.html", text: "jelly drift " },
+meatboy: { url: "ARC/meatboy.html", text: "packing meat " },
+trump: { url: "ARC/trump.html", text: "fight trump because yeah" },
+sans: { url: "ARC/sans.html", text: "sans 1v1" },
 
 
 
