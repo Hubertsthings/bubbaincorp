@@ -1,0 +1,1765 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Huss Valley</title>
+<style>
+  html, body {
+    margin: 0;
+    height: 100%;
+    background: #0e1f16;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  canvas {
+    display: block;
+    box-shadow: 0 0 40px rgba(0, 0, 0, 0.6);
+    user-select: none;
+    -webkit-user-select: none;
+  }
+</style>
+</head>
+<body>
+<canvas id="game" width="1280" height="720"></canvas>
+
+<script>
+(() => {
+  const canvas = document.getElementById('game');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+
+  // ---------- Tunables ----------
+  const ZONE = 110;                // width of start / finish zones
+  const R = 10;                    // body radius
+  const PLAYER_SPEED = 320;        // human runner speed (px/s)
+  const DASH_SPEED = 1080;         // human dash speed
+  const AI_DASH_SPEED = 880;       // bot dash speed (a bit weaker)
+  const DASH_TIME = 0.13;          // seconds
+  const DASH_COOLDOWN = 3;         // seconds (humans)
+  const BOT_MAX = 610;
+  const CATCH_DIST = R * 2 - 3;    // slightly forgiving
+  const EXTRA_BOTS = 9;            // bot runners in "multiple bots" mode (10 runners in total)
+  const HERO_CHANCE = 0.2;         // bots pick HERO 20% / CHICKEN 80%
+  const FONT = '"Trebuchet MS", sans-serif';
+
+  // chaser spawn column (obstacles never spawn here)
+  const EX0 = W / 2 - 70, EX1 = W / 2 + 70, EY0 = H / 2 - 180, EY1 = H / 2 + 180;
+
+  // navigation grid (used by bots to path around obstacles)
+  const CELL = 16;
+  const GW = Math.ceil(W / CELL), GH = Math.ceil(H / CELL);
+
+  // ---------- Game state ----------
+  let screen = 'menu';             // 'menu' | 'game'
+  // players: 1 or 2.  role: what Player 1 (WASD) plays as.  Player 2 (IJKL) gets the other role.
+  const cfg = { players: 1, multi: false, role: 'runner' };
+
+  let ents = [];
+  let trail = [];
+  let obstacles = [];
+  let level = 0;
+  let score = 0;                   // runner points (the key runner crossing)
+  let chaserPts = 0;               // tags made by the human chaser (versus modes)
+  let convertedBots = 0;           // bot runners tagged so far; they start later rounds as chasers
+  // phase: 'select' (chaser picks a runner) -> 'choose' (runner picks hero/chicken)
+  //        -> 'ready' (short countdown) -> 'play' | 'caught'
+  let phase = 'ready';
+  let phaseT = 0;
+  let flash = 0;
+  let hintT = 0;
+  let endTimer = null;
+  let heroEnt = null;              // runner going alone in wave 1
+  let waveTwo = false;             // true once the waiting runners have been released
+  let selected = null;             // runner picked by the chaser
+  let keyEnt = null;               // the runner whose crossing / capture decides the round
+  let cursorIdx = 0;               // keyboard cursor while a human chaser picks a runner
+  let banner = null;               // big center message during 'ready'
+  let notice = { text: '', t: 0, color: '#fff' };
+  let board = [];
+  let animT = 0, simT = 0, nextId = 1;
+  const mouse = { x: -1, y: -1 };
+
+  const rand = (a, b) => a + Math.random() * (b - a);
+  const randInt = (a, b) => Math.floor(rand(a, b + 1));
+  const clamp = (v, a, b) => (v < a ? a : v > b ? b : v);
+  const b2n = v => (v ? 1 : 0);
+
+  // ---------- Roles ----------
+  const humanRunnerCtrl = () => (cfg.role === 'runner' ? 'p1' : (cfg.players === 2 ? 'p2' : null));
+  const humanChaserCtrl = () => (cfg.role === 'chaser' ? 'p1' : (cfg.players === 2 ? 'p2' : null));
+  const roleOfSide = side => (side === 'p1' ? cfg.role : (cfg.role === 'runner' ? 'chaser' : 'runner'));
+  // "versus" = a human is chasing (or two humans play): match score instead of a solo leaderboard
+  const versus = () => !(cfg.players === 1 && cfg.role === 'runner');
+
+  // Keyboard-only selection keys, tied to the keyboard side (not to the role)
+  const SIDE = {
+    p1: { up: 'KeyW', down: 'KeyS', confirm: ['KeyQ', 'KeyE'], chicken: 'KeyQ', hero: 'KeyE',
+          upL: 'W', downL: 'S', confL: 'Q or E', chL: 'Q', heL: 'E' },
+    p2: { up: 'KeyI', down: 'KeyK', confirm: ['KeyU', 'KeyO'], chicken: 'KeyU', hero: 'KeyO',
+          upL: 'I', downL: 'K', confL: 'U or O', chL: 'U', heL: 'O' }
+  };
+
+  // ---------- Leaderboard storage (solo runner only) ----------
+  function boardKey() {
+    return cfg.multi ? 'hussValleyLeaderboardMulti' : 'hussValleyLeaderboard';
+  }
+  function loadBoard() {
+    try {
+      const raw = localStorage.getItem(boardKey());
+      const arr = raw ? JSON.parse(raw) : [];
+      return Array.isArray(arr) ? arr.filter(n => typeof n === 'number').slice(0, 5) : [];
+    } catch (e) { return []; }
+  }
+  function saveBoard() {
+    try { localStorage.setItem(boardKey(), JSON.stringify(board)); } catch (e) {}
+  }
+  function recordRun() {
+    if (!versus() && score > 0) {
+      board.push(score);
+      board.sort((a, b) => b - a);
+      board = board.slice(0, 5);
+      saveBoard();
+    }
+  }
+
+  // Chaser speed. A human chaser hunting only bot runners gets a head start,
+  // because bots are much quicker than a default chaser.
+  function botSpeed() {
+    const vsBots = !!humanChaserCtrl() && !humanRunnerCtrl();
+    let base, step;
+    if (cfg.multi) { base = vsBots ? 196 : 172; step = vsBots ? 20 : 21; }
+    else { base = vsBots ? 215 : 132; step = vsBots ? 18 : 20; }
+    return Math.min(BOT_MAX, base + level * step);
+  }
+
+  function notify(text, color, secs) {
+    notice = { text, color: color || '#fff', t: secs || 2 };
+  }
+
+  // =====================================================================
+  //  Geometry (obstacle collision + line of sight)
+  // =====================================================================
+  function ptSegD2(px, py, ax, ay, bx, by) {
+    const abx = bx - ax, aby = by - ay;
+    const l = abx * abx + aby * aby;
+    let t = l ? ((px - ax) * abx + (py - ay) * aby) / l : 0;
+    t = t < 0 ? 0 : t > 1 ? 1 : t;
+    const cx = ax + abx * t - px, cy = ay + aby * t - py;
+    return cx * cx + cy * cy;
+  }
+  function orient(px, py, qx, qy, rx, ry) { return (qx - px) * (ry - py) - (qy - py) * (rx - px); }
+  function segsCross(ax, ay, bx, by, cx, cy, dx, dy) {
+    const d1 = orient(cx, cy, dx, dy, ax, ay), d2 = orient(cx, cy, dx, dy, bx, by);
+    const d3 = orient(ax, ay, bx, by, cx, cy), d4 = orient(ax, ay, bx, by, dx, dy);
+    return ((d1 > 0 && d2 < 0) || (d1 < 0 && d2 > 0)) && ((d3 > 0 && d4 < 0) || (d3 < 0 && d4 > 0));
+  }
+  function segSegD2(ax, ay, bx, by, cx, cy, dx, dy) {
+    if (segsCross(ax, ay, bx, by, cx, cy, dx, dy)) return 0;
+    return Math.min(
+      ptSegD2(ax, ay, cx, cy, dx, dy), ptSegD2(bx, by, cx, cy, dx, dy),
+      ptSegD2(cx, cy, ax, ay, bx, by), ptSegD2(dx, dy, ax, ay, bx, by));
+  }
+  function insidePoly(p, x, y) {
+    let c = false;
+    for (let i = 0, j = p.length - 1; i < p.length; j = i++) {
+      const a = p[i], b = p[j];
+      if ((a.y > y) !== (b.y > y) && x < (b.x - a.x) * (y - a.y) / (b.y - a.y) + a.x) c = !c;
+    }
+    return c;
+  }
+  let cpx = 0, cpy = 0;            // closest point output of closestOnPoly
+  function closestOnPoly(p, x, y) {
+    let best = Infinity;
+    for (let i = 0, j = p.length - 1; i < p.length; j = i++) {
+      const a = p[j], b = p[i];
+      const abx = b.x - a.x, aby = b.y - a.y;
+      const l = abx * abx + aby * aby;
+      let t = l ? ((x - a.x) * abx + (y - a.y) * aby) / l : 0;
+      t = t < 0 ? 0 : t > 1 ? 1 : t;
+      const qx = a.x + abx * t, qy = a.y + aby * t;
+      const d = (x - qx) * (x - qx) + (y - qy) * (y - qy);
+      if (d < best) { best = d; cpx = qx; cpy = qy; }
+    }
+    return best;
+  }
+
+  // Distance from a point to the nearest obstacle (0 if inside one).
+  function obstacleDist(x, y) {
+    let best = Infinity;
+    for (const o of obstacles) {
+      if (Math.hypot(x - o.cx, y - o.cy) - o.br > best) continue;
+      if (insidePoly(o.pts, x, y)) return 0;
+      const d = Math.sqrt(closestOnPoly(o.pts, x, y));
+      if (d < best) best = d;
+    }
+    return best;
+  }
+  // Nearest obstacle with the direction pointing away from it.
+  function nearestObstacle(x, y) {
+    let best = null, bd = Infinity;
+    for (const o of obstacles) {
+      if (Math.hypot(x - o.cx, y - o.cy) - o.br > bd) continue;
+      const inside = insidePoly(o.pts, x, y);
+      const d = Math.sqrt(closestOnPoly(o.pts, x, y));
+      const eff = inside ? 0 : d;
+      if (eff < bd) {
+        bd = eff;
+        let nx = (x - cpx) / (d || 1), ny = (y - cpy) / (d || 1);
+        if (inside) { nx = -nx; ny = -ny; }
+        if (!d) { const l = Math.hypot(x - o.cx, y - o.cy) || 1; nx = (x - o.cx) / l; ny = (y - o.cy) / l; }
+        best = { d: eff, nx, ny };
+      }
+    }
+    return best;
+  }
+  // Is the straight segment at least `clear` away from every obstacle?
+  function lineClear(x0, y0, x1, y1, clear) {
+    const c2 = clear * clear;
+    for (const o of obstacles) {
+      if (Math.sqrt(ptSegD2(o.cx, o.cy, x0, y0, x1, y1)) > o.br + clear) continue;
+      if (insidePoly(o.pts, x0, y0) || insidePoly(o.pts, x1, y1)) return false;
+      const p = o.pts;
+      for (let i = 0, j = p.length - 1; i < p.length; j = i++) {
+        if (segSegD2(x0, y0, x1, y1, p[j].x, p[j].y, p[i].x, p[i].y) < c2) return false;
+      }
+    }
+    return true;
+  }
+
+  // Push a body out of any obstacle it overlaps (works for concave shapes too).
+  function pushOut(e) {
+    for (let it = 0; it < 3; it++) {
+      let moved = false;
+      for (const o of obstacles) {
+        if (Math.hypot(e.x - o.cx, e.y - o.cy) > o.br + R + 2) continue;
+        const d = Math.sqrt(closestOnPoly(o.pts, e.x, e.y));
+        const inside = insidePoly(o.pts, e.x, e.y);
+        if (inside) {
+          let nx = cpx - e.x, ny = cpy - e.y;
+          let l = Math.hypot(nx, ny);
+          if (l < 1e-6) { nx = e.x - o.cx; ny = e.y - o.cy; l = Math.hypot(nx, ny) || 1; }
+          e.x = cpx + (nx / l) * (R + 0.05);
+          e.y = cpy + (ny / l) * (R + 0.05);
+          moved = true;
+        } else if (d < R) {
+          let nx = e.x - cpx, ny = e.y - cpy;
+          let l = Math.hypot(nx, ny);
+          if (l < 1e-6) { nx = e.x - o.cx; ny = e.y - o.cy; l = Math.hypot(nx, ny) || 1; }
+          e.x = cpx + (nx / l) * (R + 0.05);
+          e.y = cpy + (ny / l) * (R + 0.05);
+          moved = true;
+        }
+      }
+      e.x = clamp(e.x, R, W - R);
+      e.y = clamp(e.y, R, H - R);
+      if (!moved) break;
+    }
+  }
+
+  // Move in small sub-steps so fast dashes can never tunnel through a thin obstacle.
+  function moveEntity(e, vx, vy, dt) {
+    const dist = Math.hypot(vx, vy) * dt;
+    if (dist <= 0) return;
+    const n = Math.max(1, Math.ceil(dist / 5));
+    const sx = (vx * dt) / n, sy = (vy * dt) / n;
+    for (let k = 0; k < n; k++) {
+      e.x = clamp(e.x + sx, R, W - R);
+      e.y = clamp(e.y + sy, R, H - R);
+      pushOut(e);
+    }
+  }
+
+  // =====================================================================
+  //  Random obstacles (3 - 6 per round)
+  // =====================================================================
+  function rotPts(pts, a) {
+    const c = Math.cos(a), s = Math.sin(a);
+    return pts.map(p => ({ x: p.x * c - p.y * s, y: p.x * s + p.y * c }));
+  }
+  function centerPts(pts) {
+    let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+    for (const p of pts) { x0 = Math.min(x0, p.x); x1 = Math.max(x1, p.x); y0 = Math.min(y0, p.y); y1 = Math.max(y1, p.y); }
+    const mx = (x0 + x1) / 2, my = (y0 + y1) / 2;
+    return pts.map(p => ({ x: p.x - mx, y: p.y - my }));
+  }
+  const SHAPES = {
+    rect() {
+      const w = rand(80, 160), h = rand(46, 100);
+      return [{ x: -w / 2, y: -h / 2 }, { x: w / 2, y: -h / 2 }, { x: w / 2, y: h / 2 }, { x: -w / 2, y: h / 2 }];
+    },
+    tri() {
+      const r = rand(62, 92), a0 = rand(0, Math.PI * 2), pts = [];
+      for (let k = 0; k < 3; k++) {
+        const a = a0 + k * (Math.PI * 2 / 3) + rand(-0.3, 0.3), rr = r * rand(0.88, 1.1);
+        pts.push({ x: Math.cos(a) * rr, y: Math.sin(a) * rr });
+      }
+      return pts;
+    },
+    blob() {
+      const n = randInt(7, 10), base = rand(48, 78), pts = [];
+      for (let i = 0; i < n; i++) {
+        const a = ((i + rand(-0.25, 0.25)) / n) * Math.PI * 2, r = base * rand(0.72, 1.12);
+        pts.push({ x: Math.cos(a) * r, y: Math.sin(a) * r });
+      }
+      return pts;
+    },
+    L() {
+      const t = rand(38, 48), a = rand(100, 140), b = rand(90, 130);
+      return [{ x: 0, y: 0 }, { x: a, y: 0 }, { x: a, y: t }, { x: t, y: t }, { x: t, y: b }, { x: 0, y: b }];
+    },
+    plus() {
+      const arm = rand(50, 66), t = rand(19, 25);
+      return [
+        { x: -t, y: -arm }, { x: t, y: -arm }, { x: t, y: -t }, { x: arm, y: -t },
+        { x: arm, y: t }, { x: t, y: t }, { x: t, y: arm }, { x: -t, y: arm },
+        { x: -t, y: t }, { x: -arm, y: t }, { x: -arm, y: -t }, { x: -t, y: -t }];
+    },
+    star() {
+      const ro = rand(64, 86), ri = ro * rand(0.46, 0.56), a0 = rand(0, Math.PI * 2), pts = [];
+      for (let i = 0; i < 10; i++) {
+        const r = i % 2 === 0 ? ro : ri, a = a0 + (i / 10) * Math.PI * 2;
+        pts.push({ x: Math.cos(a) * r, y: Math.sin(a) * r });
+      }
+      return pts;
+    }
+  };
+  const STONE = [
+    ['#8e9398', '#4d5257'], ['#8a847c', '#4f4a43'], ['#9b9084', '#574d42'], ['#7f8b90', '#445056']
+  ];
+
+  function shuffled(arr) {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) { const j = randInt(0, i); [a[i], a[j]] = [a[j], a[i]]; }
+    return a;
+  }
+
+  function generateObstacles() {
+    for (let attempt = 0; attempt < 120; attempt++) {
+      const target = randInt(3, 6);
+      // more rocks -> slightly smaller rocks, so the field never feels walled off
+      const scale = target <= 3 ? 1 : target === 4 ? 0.92 : 0.8;
+      const list = [];
+      const kinds = shuffled(Object.keys(SHAPES));
+      for (let k = 0; k < target; k++) {
+        for (let tries = 0; tries < 80; tries++) {
+          const local = centerPts(rotPts(SHAPES[kinds[k % kinds.length]](), rand(0, Math.PI * 2)))
+            .map(p => ({ x: p.x * scale, y: p.y * scale }));
+          let br = 0;
+          for (const p of local) br = Math.max(br, Math.hypot(p.x, p.y));
+          const minX = ZONE + 30 + br, maxX = W - ZONE - 30 - br;   // never touches start / finish
+          const minY = 52 + br, maxY = H - 52 - br;                 // always a gap to the walls
+          if (minX >= maxX || minY >= maxY) continue;
+          const cx = rand(minX, maxX), cy = rand(minY, maxY);
+          // keep the chaser spawn column clear
+          const dx = Math.max(EX0 - cx, 0, cx - EX1), dy = Math.max(EY0 - cy, 0, cy - EY1);
+          if (Math.hypot(dx, dy) < br + 8) continue;
+          if (list.some(o => Math.hypot(o.cx - cx, o.cy - cy) < o.br + br + 56)) continue;
+          const col = STONE[randInt(0, STONE.length - 1)];
+          list.push({
+            cx, cy, br, fill: col[0], edge: col[1],
+            pts: local.map(p => ({ x: p.x + cx, y: p.y + cy }))
+          });
+          break;
+        }
+      }
+      // aim for the rolled count; after a while settle for anything from 3 up
+      if (list.length === target || (attempt >= 40 && list.length >= 3)) {
+        obstacles = list;
+        buildMask();
+        if (isConnected()) return;
+      }
+    }
+    obstacles = [];
+  }
+
+  // =====================================================================
+  //  Navigation grid (bots path around obstacles)
+  // =====================================================================
+  const blocked = new Uint8Array(GW * GH);
+  const finishField = new Float64Array(GW * GH);
+  const NB = [[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [1, -1], [-1, 1], [-1, -1]];
+  const cellOf = (x, y) => clamp((y / CELL) | 0, 0, GH - 1) * GW + clamp((x / CELL) | 0, 0, GW - 1);
+
+  function buildMask() {
+    for (let gy = 0; gy < GH; gy++) {
+      for (let gx = 0; gx < GW; gx++) {
+        blocked[gy * GW + gx] = obstacleDist((gx + 0.5) * CELL, (gy + 0.5) * CELL) < R + 5 ? 1 : 0;
+      }
+    }
+  }
+
+  // Start side, finish side and the chaser spawn must all be mutually reachable.
+  function isConnected() {
+    const seen = new Uint8Array(GW * GH);
+    const stack = [cellOf(ZONE / 2, H / 2)];
+    if (blocked[stack[0]]) return false;
+    seen[stack[0]] = 1;
+    while (stack.length) {
+      const i = stack.pop(), x = i % GW, y = (i / GW) | 0;
+      for (let k = 0; k < 4; k++) {
+        const nx = x + NB[k][0], ny = y + NB[k][1];
+        if (nx < 0 || ny < 0 || nx >= GW || ny >= GH) continue;
+        const ni = ny * GW + nx;
+        if (seen[ni] || blocked[ni]) continue;
+        seen[ni] = 1; stack.push(ni);
+      }
+    }
+    return !!(seen[cellOf(W - ZONE / 2, H / 2)] && seen[cellOf(W / 2, H / 2)] &&
+              seen[cellOf(W - ZONE / 2, 60)] && seen[cellOf(W - ZONE / 2, H - 60)]);
+  }
+
+  // binary min-heap for Dijkstra
+  const heapK = [], heapV = [];
+  let popK = 0;
+  function hpush(k, v) {
+    let i = heapK.length;
+    heapK.push(k); heapV.push(v);
+    while (i > 0) {
+      const p = (i - 1) >> 1;
+      if (heapK[p] <= k) break;
+      heapK[i] = heapK[p]; heapV[i] = heapV[p]; i = p;
+    }
+    heapK[i] = k; heapV[i] = v;
+  }
+  function hpop() {
+    const topK = heapK[0], topV = heapV[0];
+    const lastK = heapK.pop(), lastV = heapV.pop();
+    const n = heapK.length;
+    if (n > 0) {
+      let i = 0;
+      for (;;) {
+        let c = 2 * i + 1;
+        if (c >= n) break;
+        if (c + 1 < n && heapK[c + 1] < heapK[c]) c++;
+        if (heapK[c] >= lastK) break;
+        heapK[i] = heapK[c]; heapV[i] = heapV[c]; i = c;
+      }
+      heapK[i] = lastK; heapV[i] = lastV;
+    }
+    popK = topK;
+    return topV;
+  }
+
+  // Distance-to-goal field over free cells (8-way, no corner cutting).
+  function computeField(goals, out) {
+    out.fill(Infinity);
+    heapK.length = 0; heapV.length = 0;
+    for (const g of goals) {
+      if (g < 0 || blocked[g]) continue;
+      out[g] = 0; hpush(0, g);
+    }
+    while (heapK.length) {
+      const i = hpop(), d = popK;
+      if (d > out[i]) continue;
+      const x = i % GW, y = (i / GW) | 0;
+      for (let k = 0; k < 8; k++) {
+        const dx = NB[k][0], dy = NB[k][1];
+        const nx = x + dx, ny = y + dy;
+        if (nx < 0 || ny < 0 || nx >= GW || ny >= GH) continue;
+        const ni = ny * GW + nx;
+        if (blocked[ni]) continue;
+        let cost = 1;
+        if (dx && dy) {
+          if (blocked[y * GW + nx] || blocked[ny * GW + x]) continue;
+          cost = 1.4142;
+        }
+        const nd = d + cost;
+        if (nd < out[ni]) { out[ni] = nd; hpush(nd, ni); }
+      }
+    }
+  }
+
+  function buildNav() {
+    buildMask();
+    const goals = [];
+    for (let gy = 0; gy < GH; gy++) {
+      for (let gx = 0; gx < GW; gx++) {
+        if ((gx + 0.5) * CELL >= W - ZONE + 6) goals.push(gy * GW + gx);
+      }
+    }
+    computeField(goals, finishField);
+  }
+
+  function nearestFreeCell(x, y) {
+    const cx = clamp((x / CELL) | 0, 0, GW - 1), cy = clamp((y / CELL) | 0, 0, GH - 1);
+    const i0 = cy * GW + cx;
+    if (!blocked[i0]) return i0;
+    let best = -1, bd = Infinity;
+    for (let oy = -4; oy <= 4; oy++) {
+      for (let ox = -4; ox <= 4; ox++) {
+        const nx = cx + ox, ny = cy + oy;
+        if (nx < 0 || ny < 0 || nx >= GW || ny >= GH) continue;
+        const i = ny * GW + nx;
+        if (blocked[i]) continue;
+        const d = ox * ox + oy * oy;
+        if (d < bd) { bd = d; best = i; }
+      }
+    }
+    return best;
+  }
+
+  // Follow a distance field downhill and return the farthest waypoint that is
+  // still in a clear straight line (so paths look smooth, not grid-like).
+  function flowWaypoint(field, x, y) {
+    let cur = nearestFreeCell(x, y);
+    if (cur < 0 || !isFinite(field[cur])) return null;
+    let wp = null, first = null;
+    for (let step = 0; step < 14; step++) {
+      const cx = cur % GW, cy = (cur / GW) | 0;
+      let bi = -1, bv = field[cur];
+      for (let k = 0; k < 8; k++) {
+        const dx = NB[k][0], dy = NB[k][1];
+        const nx = cx + dx, ny = cy + dy;
+        if (nx < 0 || ny < 0 || nx >= GW || ny >= GH) continue;
+        const ni = ny * GW + nx;
+        if (blocked[ni]) continue;
+        if (dx && dy && (blocked[cy * GW + nx] || blocked[ny * GW + cx])) continue;
+        if (field[ni] < bv) { bv = field[ni]; bi = ni; }
+      }
+      if (bi < 0) break;
+      cur = bi;
+      const wx = ((cur % GW) + 0.5) * CELL, wy = (((cur / GW) | 0) + 0.5) * CELL;
+      if (!first) first = { x: wx, y: wy };
+      if (lineClear(x, y, wx, wy, R + 1.5)) wp = { x: wx, y: wy };
+      else break;
+    }
+    return wp || first;
+  }
+
+  // =====================================================================
+  //  Entities
+  // =====================================================================
+  function mk(ctrl, role, label, x, y) {
+    return {
+      id: nextId++,
+      ctrl, role, label, x, y,
+      fx: 1, fy: 0,
+      dashLeft: 0, dirX: 1, dirY: 0,
+      cd: 0,
+      aiTimer: rand(4, 6),
+      finished: false,
+      waiting: false,          // held back at the start while a hero runs alone
+      orig: false,             // the original chaser (the one who picks a runner)
+      settleX: 0,
+      tagFlash: 0,
+      speedMul: rand(0.86, 0.98),
+      tgt: null, tgtT: 0,
+      chaseField: null, fieldT: -1
+    };
+  }
+  const sideLabel = c => (c === 'p1' ? 'P1' : c === 'p2' ? 'P2' : '');
+
+  function buildEntities() {
+    ents = [];
+    const converted = cfg.multi ? convertedBots : 0;
+    const hr = humanRunnerCtrl(), hc = humanChaserCtrl();
+    // Bots tagged in earlier rounds have joined the chasers, so fewer runners remain.
+    const total = cfg.multi ? EXTRA_BOTS + 1 - converted : 1;
+    let humanSlot = -1;
+    if (hr) humanSlot = total === 1 ? 0 : (Math.random() < 0.5 ? Math.floor((total - 1) / 2) : Math.floor(total / 2));
+    for (let i = 0; i < total; i++) {
+      const y = total === 1 ? H / 2 : 60 + i * (H - 120) / (total - 1);
+      const x = ZONE / 2 + (total === 1 ? 0 : rand(-14, 14));
+      if (i === humanSlot) ents.push(mk(hr, 'runner', sideLabel(hr), x, y));
+      else ents.push(mk('ai', 'runner', '', x, y));
+    }
+    const ch = mk(hc || 'ai', 'chaser', hc ? sideLabel(hc) : '', W / 2, H / 2);
+    ch.orig = true;
+    ents.push(ch);
+    for (let k = 0; k < converted; k++) ents.push(mk('ai', 'chaser', '', W / 2, H / 2));
+    layoutChasers();
+  }
+
+  // Stack the chasers in a column in the middle of the field.
+  function layoutChasers() {
+    const list = ents.filter(e => e.role === 'chaser')
+      .sort((a, b) => (b.orig ? 1 : 0) - (a.orig ? 1 : 0) || a.id - b.id);
+    list.forEach((c, k) => {
+      const off = k === 0 ? 0 : (k % 2 === 1 ? 1 : -1) * Math.ceil(k / 2) * 30;
+      c.x = W / 2; c.y = H / 2 + off;
+      c.fx = -1; c.fy = 0;
+      c.dashLeft = 0; c.tgt = null; c.tgtT = 0;
+    });
+  }
+
+  function resetRound() {
+    generateObstacles();
+    buildNav();
+    buildEntities();
+    trail = [];
+    endTimer = null;
+    heroEnt = null; waveTwo = false; selected = null; banner = null; keyEnt = null;
+    const runners = ents.filter(e => e.role === 'runner');
+    const hr = humanRunnerCtrl();
+    if (hr) keyEnt = ents.find(e => e.ctrl === hr);
+    else if (runners.length === 1) keyEnt = runners[0];
+    if (cfg.multi && runners.length >= 2) {
+      phase = 'select';
+      phaseT = 1.3;                       // how long an AI chaser "thinks"
+      cursorIdx = Math.floor((runners.length - 1) / 2);
+    } else {
+      phase = 'ready';
+      phaseT = 1.0;
+    }
+  }
+
+  function fullRestart() {
+    level = 0;
+    convertedBots = 0;                  // game over: every bot is a runner again
+    if (!versus()) score = 0;           // solo resets; versus keeps match score
+    resetRound();
+  }
+
+  function startGame() {
+    board = loadBoard();
+    level = 0; score = 0; chaserPts = 0; convertedBots = 0;
+    flash = 0; hintT = 9; notice.t = 0;
+    screen = 'game';
+    clearKeys();
+    resetRound();
+  }
+
+  function goMenu() {
+    screen = 'menu';
+    clearKeys();
+  }
+
+  // =====================================================================
+  //  Round flow: pick a runner -> hero or chicken -> go
+  // =====================================================================
+  const chooserEnt = () => ents.find(e => e.orig);
+  const chooserIsHuman = () => { const c = chooserEnt(); return !!c && c.ctrl !== 'ai'; };
+
+  function runnersSorted() {
+    return ents.filter(e => e.role === 'runner' && !e.finished).sort((a, b) => a.y - b.y);
+  }
+  function cursorRunner() {
+    const list = runnersSorted();
+    return list.length ? list[clamp(cursorIdx, 0, list.length - 1)] : null;
+  }
+  function moveCursor(d) {
+    const n = runnersSorted().length;
+    if (n) cursorIdx = clamp(cursorIdx + d, 0, n - 1);
+  }
+
+  function pickRunner(r) {
+    selected = r;
+    if (!humanRunnerCtrl()) keyEnt = r;    // with only bot runners, the one you pick is the target
+    phase = 'choose';
+    phaseT = 1.1;                          // AI runners "think" for a moment
+  }
+
+  function chooseMode(mode) {
+    applyHero(mode === 'hero');
+    const human = selected.ctrl !== 'ai';
+    const solo = human && cfg.players === 1;
+    const who = human ? selected.label : 'A bot';
+    if (heroEnt) {
+      banner = {
+        title: 'HERO RUN!',
+        sub: solo ? 'You run alone — then everyone else must go.'
+                  : who + ' runs alone — the others wait, then must go.',
+        color: '#ffd84a'
+      };
+    } else {
+      banner = {
+        title: 'CHICKEN!',
+        sub: solo ? 'You chose to run with the pack.' : who + ' chose the pack — everyone runs together.',
+        color: '#ffffff'
+      };
+    }
+    phase = 'ready';
+    phaseT = 1.4;
+  }
+  function applyHero(hero) {
+    heroEnt = null;
+    if (hero) {
+      heroEnt = selected;
+      for (const e of ents) if (e.role === 'runner' && e !== selected) e.waiting = true;
+    }
+  }
+
+  // Hero finished (or was caught): everybody else has to go now.
+  function startWave2() {
+    waveTwo = true;
+    for (const e of ents) e.waiting = false;
+    layoutChasers();
+    trail = [];
+    if (keyEnt && (keyEnt.finished || keyEnt.role === 'chaser')) endTimer = 20;
+    banner = { title: 'NOW THE OTHERS GO!', sub: 'The chasers regroup in the middle.', color: '#ffffff' };
+    phase = 'ready';
+    phaseT = 1.4;
+  }
+
+  // =====================================================================
+  //  Input
+  // =====================================================================
+  const keys = { w: false, a: false, s: false, d: false, i: false, j: false, k: false, l: false };
+  const keyMap = {
+    KeyW: 'w', KeyA: 'a', KeyS: 's', KeyD: 'd',
+    KeyI: 'i', KeyJ: 'j', KeyK: 'k', KeyL: 'l'
+  };
+  const DASH_KEYS = {
+    p1: ['Space', 'KeyQ', 'KeyE'],
+    p2: ['ShiftRight', 'KeyO', 'KeyU']
+  };
+  function clearKeys() { for (const k in keys) keys[k] = false; }
+
+  window.addEventListener('keydown', e => {
+    if (screen === 'menu') {
+      if (e.code === 'Enter' || e.code === 'Space') { startGame(); e.preventDefault(); }
+      return;
+    }
+    if (e.code === 'Escape') { goMenu(); e.preventDefault(); return; }
+    if (keyMap[e.code]) { keys[keyMap[e.code]] = true; e.preventDefault(); }
+    if (e.code === 'Space') e.preventDefault();
+
+    // --- keyboard-only selection (chaser browses runners, runner picks hero/chicken) ---
+    if (phase === 'select' && chooserIsHuman()) {
+      const sk = SIDE[chooserEnt().ctrl];
+      if (e.code === sk.up) { moveCursor(-1); e.preventDefault(); return; }
+      if (e.code === sk.down) { moveCursor(1); e.preventDefault(); return; }
+      if (!e.repeat && sk.confirm.includes(e.code)) {
+        const r = cursorRunner();
+        if (r) pickRunner(r);
+        e.preventDefault();
+        return;
+      }
+    } else if (phase === 'choose' && selected && selected.ctrl !== 'ai') {
+      const sk = SIDE[selected.ctrl];
+      if (!e.repeat) {
+        if (e.code === sk.chicken) { chooseMode('chicken'); e.preventDefault(); return; }
+        if (e.code === sk.hero) { chooseMode('hero'); e.preventDefault(); return; }
+      }
+    }
+
+    if (!e.repeat) {
+      if (DASH_KEYS.p1.includes(e.code)) tryDash('p1');
+      if (cfg.players === 2 && DASH_KEYS.p2.includes(e.code)) { tryDash('p2'); e.preventDefault(); }
+    }
+  });
+  window.addEventListener('keyup', e => {
+    if (keyMap[e.code]) keys[keyMap[e.code]] = false;
+  });
+  window.addEventListener('blur', clearKeys);
+
+  function canvasPos(e) {
+    const r = canvas.getBoundingClientRect();
+    return { x: (e.clientX - r.left) * W / r.width, y: (e.clientY - r.top) * H / r.height };
+  }
+  const inRect = (p, b) => p.x >= b.x && p.x <= b.x + b.w && p.y >= b.y && p.y <= b.y + b.h;
+
+  const BACK_BTN = { x: 10, y: 10, w: 84, h: 28 };
+  // display-only boxes shown to the runner who was chosen (not clickable)
+  const CHOICE_BOXES = [
+    { id: 'chicken', x: W / 2 - 280, y: 112, w: 270, h: 56 },
+    { id: 'hero', x: W / 2 + 10, y: 112, w: 270, h: 56 }
+  ];
+
+  // The mouse is only used for the menu screen and the Menu button.
+  window.addEventListener('mousemove', e => {
+    const p = canvasPos(e);
+    mouse.x = p.x; mouse.y = p.y;
+    let hover = false;
+    if (screen === 'menu') hover = menuButtons().some(b => inRect(p, b));
+    else hover = inRect(p, BACK_BTN);
+    canvas.style.cursor = hover ? 'pointer' : 'default';
+  });
+
+  window.addEventListener('mousedown', e => {
+    if (e.button !== 0) return;
+    const p = canvasPos(e);
+    mouse.x = p.x; mouse.y = p.y;
+    if (screen === 'menu') {
+      for (const b of menuButtons()) {
+        if (inRect(p, b)) { onMenuClick(b.id); break; }
+      }
+      e.preventDefault();
+      return;
+    }
+    if (inRect(p, BACK_BTN)) { goMenu(); e.preventDefault(); return; }
+    e.preventDefault();
+  });
+
+  function inputVec(ctrl) {
+    let dx, dy;
+    if (ctrl === 'p1') {
+      dx = b2n(keys.d) - b2n(keys.a);
+      dy = b2n(keys.s) - b2n(keys.w);
+    } else {
+      dx = b2n(keys.l) - b2n(keys.j);
+      dy = b2n(keys.k) - b2n(keys.i);
+    }
+    const len = Math.hypot(dx, dy);
+    if (len > 0) { dx /= len; dy /= len; }
+    return { dx, dy };
+  }
+
+  function startDash(e, dx, dy) {
+    e.dirX = dx; e.dirY = dy;
+    e.dashLeft = DASH_TIME;
+  }
+
+  function tryDash(ctrl) {
+    if (screen !== 'game' || phase !== 'play') return;
+    const e = ents.find(x => x.ctrl === ctrl);
+    if (!e || e.finished || e.waiting || e.cd > 0 || e.dashLeft > 0) return;
+    const { dx, dy } = inputVec(ctrl);
+    if (dx !== 0 || dy !== 0) startDash(e, dx, dy);
+    else startDash(e, e.fx, e.fy);
+    e.cd = DASH_COOLDOWN;
+  }
+
+  // =====================================================================
+  //  Menu
+  // =====================================================================
+  function menuButtons() {
+    return [
+      { id: 'one', x: W / 2 - 255, y: 148, w: 250, h: 50, label: '1 PLAYER', sel: cfg.players === 1 },
+      { id: 'two', x: W / 2 + 5, y: 148, w: 250, h: 50, label: '2 PLAYERS', sel: cfg.players === 2 },
+      { id: 'roleR', x: W / 2 - 255, y: 206, w: 250, h: 50, label: 'PLAY AS RUNNER', sel: cfg.role === 'runner', tint: 'runner' },
+      { id: 'roleC', x: W / 2 + 5, y: 206, w: 250, h: 50, label: 'PLAY AS CHASER', sel: cfg.role === 'chaser', tint: 'chaser' },
+      { id: 'multi', x: W / 2 - 255, y: 264, w: 510, h: 46, label: 'MULTIPLE BOTS: ' + (cfg.multi ? 'ON' : 'OFF'), sel: cfg.multi },
+      { id: 'start', x: W / 2 - 255, y: 318, w: 510, h: 58, label: 'START GAME', primary: true }
+    ];
+  }
+
+  function onMenuClick(id) {
+    if (id === 'one') cfg.players = 1;
+    else if (id === 'two') cfg.players = 2;
+    else if (id === 'roleR') cfg.role = 'runner';
+    else if (id === 'roleC') cfg.role = 'chaser';
+    else if (id === 'multi') cfg.multi = !cfg.multi;
+    else if (id === 'start') startGame();
+  }
+
+  function roundRect(x, y, w, h, r) {
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.arcTo(x + w, y, x + w, y + h, r);
+    ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r);
+    ctx.arcTo(x, y, x + w, y, r);
+    ctx.closePath();
+  }
+
+  function drawButton(b) {
+    const hover = inRect(mouse, b);
+    let fill, stroke;
+    if (b.primary) { fill = hover ? '#43c75a' : '#2fa845'; stroke = '#b9f5c3'; }
+    else if (b.sel && b.tint === 'runner') { fill = hover ? '#19bde0' : '#0f9fbf'; stroke = '#b8f3ff'; }
+    else if (b.sel && b.tint === 'chaser') { fill = hover ? '#e04740' : '#c8362f'; stroke = '#ffc9c6'; }
+    else if (b.sel) { fill = hover ? '#2e8cff' : '#1f74e0'; stroke = '#bfe0ff'; }
+    else { fill = hover ? 'rgba(255,255,255,0.22)' : 'rgba(255,255,255,0.1)'; stroke = 'rgba(255,255,255,0.45)'; }
+    ctx.fillStyle = fill;
+    roundRect(b.x, b.y, b.w, b.h, 10); ctx.fill();
+    ctx.lineWidth = 2; ctx.strokeStyle = stroke; ctx.stroke();
+    let tx = b.x + b.w / 2;
+    if (b.tint) {
+      // little body icon so the role is recognisable at a glance
+      if (b.tint === 'runner') drawBodyRaw(b.x + 34, b.y + b.h / 2, '#00e5ff', '#007c8a', 1, 0, 1.05);
+      else drawBodyRaw(b.x + 34, b.y + b.h / 2, '#e53935', '#7f0f0f', 1, 0, 1.05);
+      tx += 16;
+    }
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold ' + (b.primary ? 26 : 19) + 'px ' + FONT;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(b.label, tx, b.y + b.h / 2 + 1);
+    ctx.textBaseline = 'alphabetic';
+  }
+
+  function keycap(x, y, w, h, label) {
+    ctx.fillStyle = 'rgba(0,0,0,0.35)';
+    roundRect(x, y + 3, w, h, 6); ctx.fill();
+    ctx.fillStyle = '#f2f5f7';
+    roundRect(x, y, w, h, 6); ctx.fill();
+    ctx.lineWidth = 2; ctx.strokeStyle = '#98a3ab'; ctx.stroke();
+    ctx.fillStyle = '#1d2830';
+    ctx.font = 'bold ' + (label.length > 2 ? 13 : 17) + 'px ' + FONT;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(label, x + w / 2, y + h / 2 + 1);
+    ctx.textBaseline = 'alphabetic';
+  }
+
+  function drawControls(x, y, w, h, side, dim) {
+    const role = roleOfSide(side);
+    const sk = SIDE[side];
+    const title = (side === 'p1' ? 'PLAYER 1' : 'PLAYER 2') + ' — ' + role.toUpperCase();
+    const mv = side === 'p1' ? ['W', 'A', 'S', 'D'] : ['I', 'J', 'K', 'L'];
+    const dash = side === 'p1' ? ['Q', 'E', 'SPACE'] : ['U', 'O', 'R-SHIFT'];
+
+    ctx.save();
+    ctx.globalAlpha = dim ? 0.38 : 1;
+    ctx.fillStyle = 'rgba(0,0,0,0.42)';
+    roundRect(x, y, w, h, 12); ctx.fill();
+    ctx.lineWidth = 2; ctx.strokeStyle = 'rgba(255,255,255,0.3)'; ctx.stroke();
+
+    ctx.textAlign = 'left';
+    ctx.fillStyle = side === 'p1' ? '#7ff0ff' : '#ffe08a';
+    ctx.font = 'bold 17px ' + FONT;
+    ctx.fillText(title, x + 18, y + 28);
+
+    ctx.fillStyle = 'rgba(255,255,255,0.75)';
+    ctx.font = 'bold 12px ' + FONT;
+    ctx.fillText('MOVE', x + 18, y + 52);
+    ctx.fillText('DASH  (any one)', x + 230, y + 52);
+
+    const kx = x + 34, ky = y + 62;
+    keycap(kx + 40, ky, 34, 34, mv[0]);
+    keycap(kx, ky + 38, 34, 34, mv[1]);
+    keycap(kx + 40, ky + 38, 34, 34, mv[2]);
+    keycap(kx + 80, ky + 38, 34, 34, mv[3]);
+
+    let dx = x + 230;
+    for (const lab of dash) {
+      const cw = lab.length > 2 ? 92 : 38;
+      keycap(dx, y + 62, cw, 34, lab);
+      dx += cw + 8;
+    }
+    ctx.fillStyle = 'rgba(255,255,255,0.88)';
+    ctx.font = '12px ' + FONT;
+    ctx.textAlign = 'left';
+    if (cfg.multi) {
+      if (role === 'chaser') {
+        ctx.fillText('Pick a runner:  ' + sk.upL + ' / ' + sk.downL, x + 230, y + 122);
+        ctx.fillText('Confirm:  ' + sk.confL, x + 230, y + 140);
+      } else {
+        ctx.fillText('If chosen:  ' + sk.chL + ' = CHICKEN', x + 230, y + 122);
+        ctx.fillText('                  ' + sk.heL + ' = HERO', x + 230, y + 140);
+      }
+    } else {
+      ctx.fillText('Dash: a quick burst, 3s cooldown', x + 230, y + 126);
+    }
+    ctx.restore();
+  }
+
+  function drawMenu() {
+    ctx.drawImage(grass, 0, 0);
+    ctx.fillStyle = 'rgba(5, 25, 10, 0.62)';
+    ctx.fillRect(0, 0, W, H);
+
+    ctx.textAlign = 'center';
+    ctx.font = 'bold 76px ' + FONT;
+    ctx.lineWidth = 9;
+    ctx.lineJoin = 'round';
+    ctx.strokeStyle = 'rgba(0,0,0,0.6)';
+    ctx.strokeText('HUSS VALLEY', W / 2, 92);
+    ctx.fillStyle = '#ffffff';
+    ctx.fillText('HUSS VALLEY', W / 2, 92);
+    ctx.font = '18px ' + FONT;
+    ctx.fillStyle = '#c8f5cf';
+    ctx.fillText('Cross the valley. Don’t get caught.', W / 2, 122);
+
+    drawBodyRaw(W / 2 - 380, 72, '#00e5ff', '#007c8a', 1, 0, 2.2);
+    drawBodyRaw(W / 2 + 380, 72, '#e53935', '#7f0f0f', -1, 0, 2.2);
+
+    for (const b of menuButtons()) drawButton(b);
+
+    // rules
+    ctx.textAlign = 'center';
+    ctx.font = '15px ' + FONT;
+    ctx.fillStyle = '#ffffff';
+    const lines = [];
+    const rn = cfg.role === 'runner';
+    if (cfg.players === 2) {
+      lines.push('Player 1 (WASD) is the ' + cfg.role.toUpperCase() + ', Player 2 (IJKL) is the ' + (rn ? 'CHASER' : 'RUNNER') + '.');
+    } else if (rn) {
+      lines.push('You run to the FINISH while a bot chases you. The chaser gets faster every time you cross.');
+    } else {
+      lines.push('You are the chaser — catch the bot runner before it reaches the FINISH. Each crossing makes you faster.');
+    }
+    if (cfg.multi) {
+      lines.push('9 more bot runners join. The chaser picks a runner, who goes HERO (alone first) or CHICKEN (all together). Tagged runners become chasers.');
+    }
+    lines.push('Random obstacles block the way — everyone has to go around them.');
+    lines.forEach((t, i) => ctx.fillText(t, W / 2, 404 + i * 22));
+
+    // controls
+    const p2dim = cfg.players !== 2;
+    drawControls(W / 2 - 440, 464, 420, 152, 'p1', false);
+    drawControls(W / 2 + 20, 464, 420, 152, 'p2', p2dim);
+    if (p2dim) {
+      ctx.fillStyle = 'rgba(255,255,255,0.85)';
+      ctx.font = 'bold 13px ' + FONT;
+      ctx.textAlign = 'center';
+      ctx.fillText('Player 2 is only used in 2 PLAYERS mode', W / 2 + 230, 464 + 152 + 18);
+    }
+
+    ctx.textAlign = 'center';
+    ctx.font = '14px ' + FONT;
+    ctx.fillStyle = '#ffffff';
+    ctx.fillText('Everything in-game is keyboard-only — the mouse only works on this menu and the Menu button.', W / 2, 660);
+    ctx.fillStyle = 'rgba(255,255,255,0.65)';
+    ctx.fillText('Press Enter to start  •  Esc or the ◀ Menu button returns here during a game', W / 2, H - 20);
+  }
+
+  // =====================================================================
+  //  Grass background (pre-rendered)
+  // =====================================================================
+  const grass = document.createElement('canvas');
+  grass.width = W; grass.height = H;
+  (function paintGrass() {
+    const g = grass.getContext('2d');
+    const stripe = 80;
+    for (let x = 0; x < W; x += stripe) {
+      g.fillStyle = ((x / stripe) % 2 === 0) ? '#3f9b45' : '#47a94d';
+      g.fillRect(x, 0, stripe, H);
+    }
+    for (let i = 0; i < 5200; i++) {
+      const x = Math.random() * W, y = Math.random() * H;
+      const h = 3 + Math.random() * 5;
+      g.strokeStyle = Math.random() < 0.5 ? 'rgba(20,90,30,0.35)' : 'rgba(150,230,120,0.28)';
+      g.lineWidth = 1;
+      g.beginPath();
+      g.moveTo(x, y);
+      g.lineTo(x + (Math.random() - 0.5) * 3, y - h);
+      g.stroke();
+    }
+    const colors = ['#fff6a8', '#ffffff', '#ffb3d1'];
+    for (let i = 0; i < 70; i++) {
+      const x = ZONE + 10 + Math.random() * (W - ZONE * 2 - 20);
+      const y = 10 + Math.random() * (H - 20);
+      g.fillStyle = colors[i % colors.length];
+      g.beginPath(); g.arc(x, y, 1.8, 0, Math.PI * 2); g.fill();
+    }
+  })();
+
+  // =====================================================================
+  //  AI
+  // =====================================================================
+  function nearestRunner(e) {
+    let best = null, bd = Infinity;
+    for (const r of ents) {
+      if (r.role !== 'runner' || r.finished || r.waiting) continue;
+      const d = Math.hypot(r.x - e.x, r.y - e.y);
+      if (d < bd) { bd = d; best = r; }
+    }
+    return best ? { r: best, d: bd } : null;
+  }
+
+  // Chaser bots go for the nearest runner. Straight line when it is clear,
+  // otherwise they follow a path around the obstacles.
+  function chaserSteer(e, dt) {
+    e.tgtT -= dt;
+    const valid = e.tgt && e.tgt.role === 'runner' && !e.tgt.finished && !e.tgt.waiting;
+    if (!valid || e.tgtT <= 0) {
+      e.tgtT = 0.2;
+      const n = nearestRunner(e);
+      if (n) {
+        if (!valid) e.tgt = n.r;
+        else if (n.r !== e.tgt && n.d < Math.hypot(e.tgt.x - e.x, e.tgt.y - e.y) * 0.8) e.tgt = n.r;
+      } else {
+        e.tgt = null;
+      }
+    }
+    const t = e.tgt;
+    if (!t) return { dx: 0, dy: 0 };
+    const dx = t.x - e.x, dy = t.y - e.y, d = Math.hypot(dx, dy) || 1;
+    if (d < 40 || lineClear(e.x, e.y, t.x, t.y, R + 1.5)) return { dx: dx / d, dy: dy / d };
+
+    if (!t.chaseField) t.chaseField = new Float64Array(GW * GH);
+    if (simT - t.fieldT > 0.15 || t.fieldT < 0) {
+      computeField([nearestFreeCell(t.x, t.y)], t.chaseField);
+      t.fieldT = simT;
+    }
+    const w = flowWaypoint(t.chaseField, e.x, e.y);
+    if (w) {
+      const wx = w.x - e.x, wy = w.y - e.y, l = Math.hypot(wx, wy) || 1;
+      return { dx: wx / l, dy: wy / l };
+    }
+    return { dx: dx / d, dy: dy / d };
+  }
+
+  // Runner bots: follow the path to the finish, steer around chasers, and stay off walls/rocks.
+  function runnerSteer(e) {
+    let gx, gy;
+    const wp = flowWaypoint(finishField, e.x, e.y);
+    if (wp) { gx = wp.x - e.x; gy = wp.y - e.y; }
+    else { gx = (W - ZONE / 2) - e.x; gy = 0; }
+    const gl = Math.hypot(gx, gy) || 1;
+    gx /= gl; gy /= gl;
+
+    let sx = 0, sy = 0;
+    const RANGE = 270;
+    for (const c of ents) {
+      if (c.role !== 'chaser') continue;
+      const ddx = e.x - c.x, ddy = e.y - c.y;
+      const d = Math.hypot(ddx, ddy) || 0.01;
+      if (d >= RANGE) continue;
+      const w = Math.pow((RANGE - d) / RANGE, 1.5) * 3;
+      const ax = ddx / d, ay = ddy / d;
+      let px = -ay, py = ax;
+      if (Math.abs(px) < 0.15) {
+        const s = (H / 2 - e.y) >= 0 ? 1 : -1;
+        if (py * s < 0) { px = -px; py = -py; }
+      } else if (px < 0) { px = -px; py = -py; }
+      sx += (ax + px * 1.1) * w;
+      sy += (ay + py * 1.1) * w;
+    }
+
+    const ob = nearestObstacle(e.x, e.y);
+    if (ob && ob.d < R + 26) {
+      const k = (R + 26 - ob.d) / 26;
+      sx += ob.nx * k * 2; sy += ob.ny * k * 2;
+    }
+
+    let wy = 0;
+    const M = 62;
+    if (e.y < M) wy += (M - e.y) / M * 2;
+    if (e.y > H - M) wy -= (e.y - (H - M)) / M * 2;
+
+    const vx = gx + sx, vy = gy + sy + wy;
+    const l = Math.hypot(vx, vy) || 1;
+    return { dx: vx / l, dy: vy / l };
+  }
+
+  // =====================================================================
+  //  Round resolution
+  // =====================================================================
+  function awardPoint() {
+    score++;
+    flash = 1.4;
+  }
+
+  function win() {
+    level++;
+    resetRound();
+  }
+
+  function lose() {
+    recordRun();
+    phase = 'caught';
+    phaseT = 1.6;
+  }
+
+  // =====================================================================
+  //  Update
+  // =====================================================================
+  function update(dt) {
+    animT += dt;
+    if (hintT > 0) hintT -= dt;
+    if (flash > 0) flash -= dt;
+    if (notice.t > 0) notice.t -= dt;
+    for (const e of ents) if (e.tagFlash > 0) e.tagFlash = Math.max(0, e.tagFlash - dt);
+
+    if (phase === 'select') {
+      if (!chooserIsHuman()) {
+        phaseT -= dt;
+        if (phaseT <= 0) {
+          const runners = ents.filter(e => e.role === 'runner');
+          pickRunner(runners[randInt(0, runners.length - 1)]);   // AI chooses at random
+        }
+      }
+      return;
+    }
+    if (phase === 'choose') {
+      if (selected.ctrl === 'ai') {
+        phaseT -= dt;
+        if (phaseT <= 0) chooseMode(Math.random() < HERO_CHANCE ? 'hero' : 'chicken');
+      }
+      return;
+    }
+    if (phase === 'ready') {
+      phaseT -= dt;
+      if (phaseT <= 0) phase = 'play';
+      return;
+    }
+    if (phase === 'caught') {
+      phaseT -= dt;
+      if (phaseT <= 0) fullRestart();
+      return;
+    }
+
+    simT += dt;
+    const chaseSpeed = botSpeed();
+
+    for (const e of ents) {
+      if (e.cd > 0) e.cd = Math.max(0, e.cd - dt);
+
+      if (e.finished) {
+        if (e.ctrl === 'ai' && e.x < e.settleX) e.x = Math.min(e.settleX, e.x + 140 * dt);
+        continue;
+      }
+      if (e.waiting) continue;
+
+      const human = e.ctrl === 'p1' || e.ctrl === 'p2';
+      let dx = 0, dy = 0, speed;
+
+      if (human) {
+        const v = inputVec(e.ctrl);
+        dx = v.dx; dy = v.dy;
+        speed = e.role === 'runner' ? PLAYER_SPEED : chaseSpeed;
+      } else {
+        if (e.role === 'chaser') {
+          const v = chaserSteer(e, dt);
+          dx = v.dx; dy = v.dy;
+          speed = chaseSpeed;
+        } else {
+          const v = runnerSteer(e);
+          dx = v.dx; dy = v.dy;
+          speed = PLAYER_SPEED * e.speedMul;
+        }
+        // random dash every 4-6 seconds
+        e.aiTimer -= dt;
+        if (e.aiTimer <= 0 && e.dashLeft <= 0 && (dx !== 0 || dy !== 0)) {
+          startDash(e, dx, dy);
+          e.aiTimer = rand(4, 6);
+        }
+      }
+
+      if (dx !== 0 || dy !== 0) { e.fx = dx; e.fy = dy; }
+
+      let vx, vy;
+      if (e.dashLeft > 0) {
+        const ds = human ? DASH_SPEED : AI_DASH_SPEED;
+        vx = e.dirX * ds; vy = e.dirY * ds;
+        e.dashLeft -= dt;
+        trail.push({ x: e.x, y: e.y, a: 0.5, role: e.role, ai: !human });
+      } else {
+        vx = dx * speed; vy = dy * speed;
+      }
+      moveEntity(e, vx, vy, dt);
+
+      // finish line
+      if (e.role === 'runner' && e.x >= W - ZONE) {
+        e.finished = true;
+        e.dashLeft = 0;
+        e.settleX = W - ZONE + 20 + Math.random() * (ZONE - 46);
+        if (e === keyEnt) {
+          awardPoint();
+          if (cfg.multi && e.ctrl !== 'ai') {
+            notify((cfg.players === 2 ? e.label + ' made it safe!' : 'You made it safe!') + ' Waiting for the others...', '#aef6ff', 2.2);
+          }
+        }
+      }
+    }
+
+    for (const t of trail) t.a -= dt * 2.6;
+    trail = trail.filter(t => t.a > 0);
+
+    // ---- tagging ----
+    const tags = [];
+    for (const c of ents) {
+      if (c.role !== 'chaser') continue;
+      for (const r of ents) {
+        if (r.role !== 'runner' || r.finished || r.waiting) continue;
+        if (tags.some(t => t.r === r)) continue;
+        if (Math.hypot(c.x - r.x, c.y - r.y) < CATCH_DIST) tags.push({ r, c });
+      }
+    }
+    for (const { r, c } of tags) {
+      if (c.orig && c.ctrl !== 'ai') chaserPts++;
+      if (!cfg.multi) { lose(); return; }          // normal mode: caught = round over
+      r.role = 'chaser';
+      r.tagFlash = 0.7;
+      r.aiTimer = rand(4, 6);
+      r.dashLeft = 0;
+      r.tgt = null;
+      if (r.ctrl !== 'ai') {
+        notify((cfg.players === 2 ? r.label + ' was tagged' : 'Tagged') + '! ' + (cfg.players === 2 ? 'They are' : 'You are') + ' a chaser now.', '#ff8a8a', 2.4);
+      } else {
+        convertedBots++;   // this bot starts every later round on the chasers' team
+        if (r === keyEnt && !humanRunnerCtrl()) {
+          notify('Target caught! The round ends soon…', '#ff8a8a', 2.4);
+        } else if (!(notice.t > 0 && notice.color === '#ff8a8a')) {
+          notify('A bot was tagged — it joins the chasers next round!', '#ffb0b0', 1.8);
+        }
+      }
+    }
+
+    // ---- hero finished or caught: release everybody else ----
+    if (heroEnt && !waveTwo && (heroEnt.finished || heroEnt.role === 'chaser')) {
+      startWave2();
+      return;
+    }
+
+    // ---- round end ----
+    const key = keyEnt;
+    if (!key) return;
+    if (!cfg.multi) {
+      if (key.finished) win();
+      return;
+    }
+    const anyWaiting = ents.some(e => e.role === 'runner' && e.waiting);
+    const active = ents.filter(e => e.role === 'runner' && !e.finished && !e.waiting).length;
+    const keyResolved = key.finished || key.role === 'chaser';
+    if (!anyWaiting && keyResolved && endTimer === null) endTimer = key.finished ? 2.0 : 20;
+    if (endTimer !== null) endTimer -= dt;
+    if (!anyWaiting && (active === 0 || (endTimer !== null && endTimer <= 0))) {
+      if (key.finished) win(); else lose();
+    }
+  }
+
+  // =====================================================================
+  //  Drawing
+  // =====================================================================
+  function drawZones() {
+    ctx.fillStyle = 'rgba(40, 130, 255, 0.45)';
+    ctx.fillRect(0, 0, ZONE, H);
+    ctx.fillStyle = 'rgba(255, 205, 40, 0.5)';
+    ctx.fillRect(W - ZONE, 0, ZONE, H);
+    const c = 20;
+    ctx.fillStyle = 'rgba(255,255,255,0.35)';
+    for (let y = 0; y < H; y += c) {
+      for (let x = W - ZONE; x < W; x += c) {
+        if (((x - (W - ZONE)) / c + y / c) % 2 === 0) ctx.fillRect(x, y, Math.min(c, W - x), c);
+      }
+    }
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(ZONE, 0); ctx.lineTo(ZONE, H);
+    ctx.moveTo(W - ZONE, 0); ctx.lineTo(W - ZONE, H);
+    ctx.stroke();
+
+    ctx.save();
+    ctx.font = 'bold 30px ' + FONT;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillStyle = 'rgba(255,255,255,0.9)';
+    ctx.translate(ZONE / 2, H / 2); ctx.rotate(-Math.PI / 2);
+    ctx.fillText('START', 0, 0);
+    ctx.restore();
+
+    ctx.save();
+    ctx.font = 'bold 30px ' + FONT;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.lineWidth = 4;
+    ctx.strokeStyle = 'rgba(90,60,0,0.7)';
+    ctx.fillStyle = '#fff';
+    ctx.translate(W - ZONE / 2, H / 2); ctx.rotate(Math.PI / 2);
+    ctx.strokeText('FINISH', 0, 0);
+    ctx.fillText('FINISH', 0, 0);
+    ctx.restore();
+  }
+
+  function tracePoly(p, ox, oy) {
+    ctx.beginPath();
+    p.forEach((q, i) => (i ? ctx.lineTo(q.x + ox, q.y + oy) : ctx.moveTo(q.x + ox, q.y + oy)));
+    ctx.closePath();
+  }
+  function drawObstacle(o) {
+    ctx.save();
+    ctx.lineJoin = 'round';
+    tracePoly(o.pts, 5, 7);
+    ctx.fillStyle = 'rgba(0,0,0,0.28)';
+    ctx.fill();
+
+    tracePoly(o.pts, 0, 0);
+    ctx.fillStyle = o.fill;
+    ctx.fill();
+    ctx.save();
+    ctx.clip();
+    ctx.lineWidth = 16;
+    ctx.strokeStyle = 'rgba(0,0,0,0.2)';
+    ctx.stroke();
+    tracePoly(o.pts, -3, -3);
+    ctx.lineWidth = 3;
+    ctx.strokeStyle = 'rgba(255,255,255,0.22)';
+    ctx.stroke();
+    ctx.restore();
+
+    tracePoly(o.pts, 0, 0);
+    ctx.lineWidth = 3;
+    ctx.strokeStyle = o.edge;
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  function drawBodyRaw(x, y, fill, edge, fx, fy, s) {
+    s = s || 1;
+    const r = R * s, k = r / 14;
+    ctx.fillStyle = 'rgba(0,0,0,0.25)';
+    ctx.beginPath(); ctx.ellipse(x, y + r * 0.75, r * 0.95, r * 0.45, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = fill;
+    ctx.strokeStyle = edge;
+    ctx.lineWidth = Math.max(2, 3 * k);
+    ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    const px = -fy, py = fx;
+    for (const sd of [-1, 1]) {
+      const ex = x + fx * 5 * k + px * sd * 4.5 * k;
+      const ey = y + fy * 5 * k + py * sd * 4.5 * k;
+      ctx.fillStyle = '#fff';
+      ctx.beginPath(); ctx.arc(ex, ey, 3.4 * k, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#111';
+      ctx.beginPath(); ctx.arc(ex + fx * 1.3 * k, ey + fy * 1.3 * k, 1.6 * k, 0, Math.PI * 2); ctx.fill();
+    }
+  }
+
+  function drawEntity(e) {
+    let fill, edge;
+    if (e.role === 'chaser') {
+      fill = '#e53935';
+      edge = e.ctrl === 'p1' ? '#00e5ff' : e.ctrl === 'p2' ? '#ffd24a' : '#7f0f0f';
+    } else if (e.ctrl !== 'ai') {
+      fill = '#00e5ff'; edge = e.ctrl === 'p1' ? '#007c8a' : '#b8960b';
+    } else {
+      fill = '#7b8cff'; edge = '#2d3a9e';   // bot runners
+    }
+    ctx.globalAlpha = e.finished ? 0.55 : e.waiting ? 0.75 : 1;
+    drawBodyRaw(e.x, e.y, fill, edge, e.fx, e.fy);
+    ctx.globalAlpha = 1;
+
+    if (e.tagFlash > 0) {
+      const k = 1 - e.tagFlash / 0.7;
+      ctx.strokeStyle = 'rgba(255,255,255,' + (1 - k) + ')';
+      ctx.lineWidth = 3;
+      ctx.beginPath(); ctx.arc(e.x, e.y, R + 4 + k * 26, 0, Math.PI * 2); ctx.stroke();
+    }
+
+    const isHero = e === heroEnt && !waveTwo;
+    const isTarget = e === keyEnt && e.ctrl === 'ai' && cfg.multi && !humanRunnerCtrl() && e.role === 'runner' && !e.finished;
+    let text = e.label || '';
+    if (isHero) text = (text ? text + ' · ' : '') + 'HERO';
+    else if (isTarget) text = 'TARGET';
+    if (text) {
+      ctx.font = 'bold 11px ' + FONT;
+      ctx.textAlign = 'center';
+      ctx.lineWidth = 3;
+      ctx.strokeStyle = 'rgba(0,0,0,0.65)';
+      ctx.strokeText(text, e.x, e.y - R - 6);
+      ctx.fillStyle = isHero ? '#ffd84a' : isTarget ? '#ffb0b0' : e.ctrl === 'p1' ? '#aef6ff' : '#ffe9a6';
+      ctx.fillText(text, e.x, e.y - R - 6);
+    }
+  }
+
+  function drawRing(e, color) {
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.arc(e.x, e.y, R + 6 + Math.sin(animT * 6) * 1.5, 0, Math.PI * 2);
+    ctx.stroke();
+  }
+  function drawArrow(e, color) {
+    const y = e.y - R - 22 + Math.sin(animT * 6) * 2;
+    ctx.fillStyle = color;
+    ctx.strokeStyle = 'rgba(0,0,0,0.6)';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(e.x - 7, y - 8); ctx.lineTo(e.x + 7, y - 8); ctx.lineTo(e.x, y + 3);
+    ctx.closePath();
+    ctx.stroke(); ctx.fill();
+  }
+
+  function pill(cx, cy, w, h) {
+    const r = h / 2;
+    ctx.beginPath();
+    ctx.moveTo(cx - w / 2 + r, cy - h / 2);
+    ctx.lineTo(cx + w / 2 - r, cy - h / 2);
+    ctx.arc(cx + w / 2 - r, cy, r, -Math.PI / 2, Math.PI / 2);
+    ctx.lineTo(cx - w / 2 + r, cy + h / 2);
+    ctx.arc(cx - w / 2 + r, cy, r, Math.PI / 2, Math.PI * 1.5);
+    ctx.closePath();
+    ctx.fill();
+  }
+
+  function dashText(cx, label) {
+    ctx.font = 'bold 12px "Courier New", monospace';
+    ctx.textAlign = 'center';
+    ctx.fillStyle = 'rgba(0,0,0,0.5)';
+    pill(cx, H - 18, label.length * 8 + 22, 20);
+    ctx.fillStyle = '#ff3b3b';
+    ctx.fillText(label, cx, H - 14);
+  }
+
+  function cdLabel(e, prefix) {
+    if (!e) return prefix + 'DASH --';
+    return prefix + (e.cd > 0 ? 'DASH ' + e.cd.toFixed(1) + 's' : 'DASH READY');
+  }
+
+  function drawPanel(x, y, w, h) {
+    ctx.fillStyle = 'rgba(0,0,0,0.62)';
+    roundRect(x, y, w, h, 12); ctx.fill();
+    ctx.lineWidth = 2; ctx.strokeStyle = 'rgba(255,255,255,0.35)'; ctx.stroke();
+  }
+
+  // Display-only box (not clickable): shows which key makes this choice.
+  function drawChoiceBox(b, fill, textColor, keyLabel, label, cap) {
+    ctx.fillStyle = fill;
+    roundRect(b.x, b.y, b.w, b.h, 10); ctx.fill();
+    ctx.lineWidth = 2; ctx.strokeStyle = 'rgba(255,255,255,0.7)'; ctx.stroke();
+    keycap(b.x + 14, b.y + 11, 32, 30, keyLabel);
+    ctx.textAlign = 'center';
+    ctx.fillStyle = textColor;
+    ctx.font = 'bold 19px ' + FONT;
+    ctx.fillText(label, b.x + b.w / 2 + 22, b.y + 24);
+    ctx.font = '12px ' + FONT;
+    ctx.fillText(cap, b.x + b.w / 2 + 22, b.y + 44);
+  }
+
+  function drawPrompt() {
+    const pw = 600, px = W / 2 - pw / 2;
+    ctx.textAlign = 'center';
+    if (phase === 'select') {
+      drawPanel(px, 62, pw, 80);
+      ctx.fillStyle = '#fff';
+      ctx.font = 'bold 21px ' + FONT;
+      if (chooserIsHuman()) {
+        const c = chooserEnt(), sk = SIDE[c.ctrl];
+        ctx.fillStyle = c.ctrl === 'p1' ? '#7ff0ff' : '#ffe08a';
+        ctx.fillText((cfg.players === 2 ? c.label + ' · CHASER' : 'YOU ARE THE CHASER') + ': pick a runner', W / 2, 94);
+        ctx.fillStyle = '#fff';
+        ctx.font = '15px ' + FONT;
+        ctx.fillText(sk.upL + ' / ' + sk.downL + ' to browse   •   ' + sk.confL + ' to confirm', W / 2, 120);
+      } else {
+        ctx.fillText('The chaser is picking a runner…', W / 2, 94);
+        ctx.font = '14px ' + FONT;
+        ctx.fillStyle = 'rgba(255,255,255,0.8)';
+        ctx.fillText('Chosen at random', W / 2, 120);
+      }
+    } else if (phase === 'choose') {
+      if (selected.ctrl !== 'ai') {
+        const sk = SIDE[selected.ctrl];
+        drawPanel(px, 62, pw, 118);
+        ctx.fillStyle = selected.ctrl === 'p1' ? '#7ff0ff' : '#ffe08a';
+        ctx.font = 'bold 21px ' + FONT;
+        ctx.fillText((cfg.players === 2 ? selected.label + ', you were chosen!' : 'You were chosen!') + ' Chicken or hero?', W / 2, 94);
+        drawChoiceBox(CHOICE_BOXES[0], '#1f74e0', '#fff', sk.chL, 'CHICKEN', 'Everyone runs together');
+        drawChoiceBox(CHOICE_BOXES[1], '#d9a400', '#2b1d00', sk.heL, 'HERO', 'Run alone first — the others go after');
+      } else {
+        drawPanel(px, 62, pw, 80);
+        ctx.fillStyle = '#fff';
+        ctx.font = 'bold 21px ' + FONT;
+        ctx.fillText('A bot was chosen — it is deciding…', W / 2, 94);
+        ctx.font = '14px ' + FONT;
+        ctx.fillStyle = 'rgba(255,255,255,0.8)';
+        ctx.fillText('Bots go HERO 20% of the time, CHICKEN 80%', W / 2, 120);
+      }
+    }
+  }
+
+  function drawHUD() {
+    ctx.textBaseline = 'alphabetic';
+
+    // Back to menu button
+    const hov = inRect(mouse, BACK_BTN);
+    ctx.fillStyle = hov ? 'rgba(0,0,0,0.75)' : 'rgba(0,0,0,0.5)';
+    roundRect(BACK_BTN.x, BACK_BTN.y, BACK_BTN.w, BACK_BTN.h, 6); ctx.fill();
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 14px ' + FONT;
+    ctx.textAlign = 'center';
+    ctx.fillText('◀ Menu', BACK_BTN.x + BACK_BTN.w / 2, BACK_BTN.y + 19);
+
+    // Left info box
+    const lx = ZONE + 10;
+    const lines = cfg.multi ? 4 : 2;
+    ctx.fillStyle = 'rgba(0,0,0,0.45)';
+    ctx.fillRect(lx, 10, 200, 14 + lines * 18 + 4);
+    ctx.textAlign = 'left';
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 16px ' + FONT;
+    ctx.fillText((versus() ? 'Runner pts: ' : 'Points: ') + score, lx + 10, 31);
+    ctx.font = '13px ' + FONT;
+    ctx.fillStyle = '#ffb0b0';
+    ctx.fillText('Level ' + (level + 1) + '  •  Chaser speed ' + Math.round(botSpeed()), lx + 10, 50);
+    if (cfg.multi) {
+      const left = ents.filter(e => e.role === 'runner' && !e.finished).length;
+      ctx.fillStyle = '#c8d4ff';
+      ctx.fillText('Runners still out: ' + left, lx + 10, 68);
+      const chasing = ents.filter(e => e.role === 'chaser').length;
+      ctx.fillStyle = '#ffb0b0';
+      ctx.fillText('Chasers: ' + chasing, lx + 10, 86);
+    }
+
+    // Right panel
+    const pw = 170, px = W - ZONE - 10 - pw, py = 10;
+    ctx.fillStyle = 'rgba(0,0,0,0.45)';
+    if (!versus()) {
+      ctx.fillRect(px, py, pw, 112);
+      ctx.fillStyle = '#ffd84a';
+      ctx.textAlign = 'center';
+      ctx.font = 'bold 13px ' + FONT;
+      ctx.fillText('LEADERBOARD', px + pw / 2, py + 18);
+      ctx.font = '13px ' + FONT;
+      for (let i = 0; i < 5; i++) {
+        const v = board[i];
+        ctx.fillStyle = v !== undefined ? '#fff' : 'rgba(255,255,255,0.4)';
+        ctx.textAlign = 'left';
+        ctx.fillText((i + 1) + '.', px + 14, py + 38 + i * 15);
+        ctx.textAlign = 'right';
+        ctx.fillText(v !== undefined ? v + ' pts' : '—', px + pw - 14, py + 38 + i * 15);
+      }
+    } else {
+      ctx.fillRect(px, py, pw, 70);
+      ctx.textAlign = 'center';
+      ctx.fillStyle = '#ffd84a';
+      ctx.font = 'bold 13px ' + FONT;
+      ctx.fillText('MATCH SCORE', px + pw / 2, py + 18);
+      const hr = humanRunnerCtrl(), hc = humanChaserCtrl();
+      ctx.font = '13px ' + FONT;
+      ctx.textAlign = 'left';
+      ctx.fillStyle = '#aef6ff';
+      ctx.fillText((hr ? sideLabel(hr) : 'Bot') + ' Runner', px + 12, py + 40);
+      ctx.fillStyle = '#ffe9a6';
+      ctx.fillText((hc ? sideLabel(hc) : 'Bot') + ' Chaser', px + 12, py + 58);
+      ctx.textAlign = 'right';
+      ctx.fillStyle = '#fff';
+      ctx.fillText(String(score), px + pw - 12, py + 40);
+      ctx.fillText(String(chaserPts), px + pw - 12, py + 58);
+    }
+
+    // Title + hints
+    ctx.textAlign = 'center';
+    ctx.font = 'bold 18px ' + FONT;
+    ctx.fillStyle = 'rgba(255,255,255,0.85)';
+    ctx.fillText('HUSS VALLEY', W / 2, 28);
+
+    if (hintT > 0 && phase !== 'select' && phase !== 'choose') {
+      ctx.globalAlpha = Math.min(1, hintT);
+      ctx.font = '13px ' + FONT;
+      ctx.fillStyle = 'rgba(255,255,255,0.95)';
+      if (cfg.players === 1) {
+        ctx.fillText('WASD to move  •  Q / E / Space to dash', W / 2, 50);
+      } else {
+        ctx.fillText('P1 ' + roleOfSide('p1') + ': WASD + Q / E / Space    •    P2 ' + roleOfSide('p2') + ': IJKL + U / O / Right Shift', W / 2, 50);
+      }
+      ctx.globalAlpha = 1;
+    }
+
+    // Dash cooldown text (small red, near the bottom)
+    if (cfg.players === 1) {
+      dashText(W / 2, cdLabel(ents.find(e => e.ctrl === 'p1'), ''));
+    } else {
+      dashText(W / 2 - 100, cdLabel(ents.find(e => e.ctrl === 'p1'), 'P1 '));
+      dashText(W / 2 + 100, cdLabel(ents.find(e => e.ctrl === 'p2'), 'P2 '));
+    }
+
+    // Notices
+    if (notice.t > 0) {
+      ctx.globalAlpha = Math.min(1, notice.t);
+      ctx.font = 'bold 18px ' + FONT;
+      ctx.lineWidth = 4;
+      ctx.strokeStyle = 'rgba(0,0,0,0.65)';
+      ctx.textAlign = 'center';
+      ctx.strokeText(notice.text, W / 2, 252);
+      ctx.fillStyle = notice.color;
+      ctx.fillText(notice.text, W / 2, 252);
+      ctx.globalAlpha = 1;
+    }
+    if (endTimer !== null && endTimer > 0 && phase === 'play') {
+      if (keyEnt && keyEnt.role === 'chaser') {
+        ctx.font = '13px ' + FONT;
+        ctx.fillStyle = 'rgba(255,255,255,0.9)';
+        ctx.textAlign = 'center';
+        ctx.fillText('Round ends in ' + Math.ceil(endTimer) + 's', W / 2, 276);
+      }
+    }
+  }
+
+  function drawCenterMessage(text, sub, color) {
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.font = 'bold 60px ' + FONT;
+    ctx.lineWidth = 7;
+    ctx.lineJoin = 'round';
+    ctx.strokeStyle = 'rgba(0,0,0,0.6)';
+    ctx.strokeText(text, W / 2, H / 2 - 16);
+    ctx.fillStyle = color;
+    ctx.fillText(text, W / 2, H / 2 - 16);
+    if (sub) {
+      ctx.font = 'bold 21px ' + FONT;
+      ctx.lineWidth = 4;
+      ctx.strokeText(sub, W / 2, H / 2 + 32);
+      ctx.fillStyle = '#fff';
+      ctx.fillText(sub, W / 2, H / 2 + 32);
+    }
+    ctx.textBaseline = 'alphabetic';
+  }
+
+  function drawGame() {
+    ctx.drawImage(grass, 0, 0);
+    drawZones();
+    for (const o of obstacles) drawObstacle(o);
+
+    for (const t of trail) {
+      ctx.globalAlpha = Math.max(0, t.a);
+      ctx.fillStyle = t.role === 'chaser' ? '#ff6a6a' : (t.ai ? '#9aa8ff' : '#00e5ff');
+      ctx.beginPath(); ctx.arc(t.x, t.y, R, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+
+    const order = ents.slice().sort((a, b) => a.y - b.y);
+    for (const e of order) drawEntity(e);
+
+    // selection highlights
+    if (heroEnt && !waveTwo && !heroEnt.finished) drawRing(heroEnt, '#ffd84a');
+    if (phase === 'select' && chooserIsHuman()) {
+      const r = cursorRunner();
+      if (r) { drawRing(r, '#ffe08a'); drawArrow(r, '#ffe08a'); }
+    }
+    if (phase === 'choose' && selected) {
+      drawRing(selected, '#ffffff');
+      drawArrow(selected, '#ffffff');
+    }
+
+    drawHUD();
+    drawPrompt();
+
+    if (phase === 'ready') {
+      if (banner) {
+        drawCenterMessage(banner.title, banner.sub, banner.color);
+      } else {
+        drawCenterMessage(score === 0 && level === 0 ? 'GET READY' : 'LEVEL ' + (level + 1),
+          cfg.multi && convertedBots > 0
+            ? (convertedBots + 1) + ' chasers are hunting — and they’re getting faster...'
+            : 'Chasers are getting faster...', '#ffffff');
+      }
+    } else if (phase === 'caught') {
+      if (!versus()) {
+        drawCenterMessage('CAUGHT!', 'Final score: ' + score + '  —  restarting', '#ff5252');
+      } else if (humanChaserCtrl() && !humanRunnerCtrl()) {
+        drawCenterMessage('RUNNER CAUGHT!', 'Nice catch! Restarting…', '#ff5252');
+      } else {
+        drawCenterMessage('RUNNER CAUGHT!', 'Chaser wins the round  —  restarting', '#ff5252');
+      }
+    }
+    if (flash > 0 && phase !== 'caught') {
+      const txt = humanRunnerCtrl() ? '+1 POINT  •  CHASERS FASTER!' : 'RUNNER SCORES  •  CHASERS FASTER!';
+      ctx.globalAlpha = Math.min(1, flash);
+      ctx.textAlign = 'center';
+      ctx.font = 'bold 30px ' + FONT;
+      ctx.lineWidth = 5;
+      ctx.strokeStyle = 'rgba(0,0,0,0.6)';
+      ctx.strokeText(txt, W / 2, 214);
+      ctx.fillStyle = '#ffd84a';
+      ctx.fillText(txt, W / 2, 214);
+      ctx.globalAlpha = 1;
+    }
+  }
+
+  function draw() {
+    if (screen === 'menu') drawMenu();
+    else drawGame();
+  }
+
+  // ---------- Scaling ----------
+  function resize() {
+    const scale = Math.min(window.innerWidth / W, window.innerHeight / H);
+    canvas.style.width = Math.floor(W * scale) + 'px';
+    canvas.style.height = Math.floor(H * scale) + 'px';
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  // ---------- Loop ----------
+  let last = performance.now();
+  function frame(now) {
+    const dt = Math.min(0.05, (now - last) / 1000);
+    last = now;
+    if (screen === 'game') update(dt);
+    else animT += dt;
+    draw();
+    requestAnimationFrame(frame);
+  }
+
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
