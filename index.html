@@ -94,14 +94,11 @@ lessons. These include, Math, English, History, and Science.</h3>
     </div>
     <div class="proxy-menu-grid">
       <a href="TOOLS/sites/gfn.html" class="proxy-menu-item"><img src="lfimg/gfn.png" alt=""><span>Geforce Now</span></a>
-      <a href="404.html" class="proxy-menu-item"><img src="placeholder.png" alt=""><span>placeholder</span></a>
-      <a href="404.html" class="proxy-menu-item"><img src="placeholder.png" alt=""><span>placeholder</span></a>
-      <a href="404.html" class="proxy-menu-item"><img src="placeholder.png" alt=""><span>placeholder</span></a>
-      <a href="404.html" class="proxy-menu-item"><img src="placeholder.png" alt=""><span>placeholder</span></a>
-      <a href="404.html" class="proxy-menu-item"><img src="placeholder.png" alt=""><span>placeholder</span></a>
-      <a href="404.html" class="proxy-menu-item"><img src="placeholder.png" alt=""><span>placeholder</span></a>
-      <a href="404.html" class="proxy-menu-item"><img src="placeholder.png" alt=""><span>placeholder</span></a>
-      <a href="404.html" class="proxy-menu-item"><img src="placeholder.png" alt=""><span>placeholder</span></a>
+      <a href="TOOLS/sites/tt.html" class="proxy-menu-item"><img src="lfimg/tt.png" alt=""><span>Tik tok</span></a>
+      <a href="https://vscode.dev/" class="proxy-menu-item"><img src="lfimg/vsc.png" alt=""><span>visual studio</span></a>
+      <a href="TOOLS/sites/al.html" class="proxy-menu-item"><img src="lfimg/duck.png" alt=""><span>duck Al</span></a>
+      <a href="TOOLS/sites/movie.html" class="proxy-menu-item"><img src="lfimg/ms.png" alt=""><span>move & shows</span></a>
+      <a href="TOOLS/LF.html" class="proxy-menu-item"><img src="lfimg/www.png" alt=""><span>Lesson Finder</span></a>
     </div>
   </div>
 </div>
@@ -155,11 +152,6 @@ lessons. These include, Math, English, History, and Science.</h3>
 <a href="TOOLS/30dollar.html" class="mathbutton"  > $30 dollar haircut site </a>
 
 
-<a href="TOOLS/sites/movie.html" class="mathbutton"  > Movies & Shows [LF]</a>
-
-
-<a href="TOOLS/sites/al.html" class="mathbutton"  > Duck Al [LF]</a>
-
 
 </div>
 
@@ -173,17 +165,47 @@ lessons. These include, Math, English, History, and Science.</h3>
   const close = document.getElementById("proxyMenuClose");
 
   function positionMenu() {
-    if (menu.hidden) return;
+    if (menu.hidden) return false;
 
     const triggerRect = toggle.getBoundingClientRect();
+    const navbar = document.querySelector(".navbar");
+    const navbarRect = navbar
+      ? navbar.getBoundingClientRect()
+      : { top: 0, bottom: 60 };
+    const visibleNavbarTop = Math.max(0, navbarRect.top);
+    const visibleNavbarBottom = Math.max(0, navbarRect.bottom);
+
+    if (
+      visibleNavbarBottom > visibleNavbarTop &&
+      triggerRect.top < visibleNavbarBottom &&
+      triggerRect.bottom > visibleNavbarTop
+    ) {
+      closeMenu(false);
+      return false;
+    }
+
+    menu.style.maxHeight = "";
     const menuRect = menu.getBoundingClientRect();
+    const spaceAbove = triggerRect.top - visibleNavbarBottom - 8;
+    const spaceBelow = window.innerHeight - triggerRect.bottom - 8;
+    const openAbove = spaceAbove >= menuRect.height;
+    const availableSpace = openAbove ? spaceAbove : Math.max(0, spaceBelow);
+    const top = openAbove
+      ? triggerRect.top - menuRect.height - 8
+      : triggerRect.bottom + 8;
+
+    if (!openAbove) {
+      menu.style.maxHeight = `${availableSpace}px`;
+    }
+
     const left = Math.min(
       Math.max(8, triggerRect.left + (triggerRect.width - menuRect.width) / 2),
       window.innerWidth - menuRect.width - 8
     );
 
     menu.style.left = `${left}px`;
-    menu.style.top = `${Math.max(8, triggerRect.top - menuRect.height - 8)}px`;
+    menu.style.top = `${top}px`;
+    return true;
   }
 
   function closeMenu(restoreFocus = true) {
@@ -200,7 +222,7 @@ lessons. These include, Math, English, History, and Science.</h3>
 
     menu.hidden = false;
     toggle.setAttribute("aria-expanded", "true");
-    positionMenu();
+    if (!positionMenu()) return;
     close.focus();
   });
 
@@ -823,7 +845,7 @@ function openLog() {
 
 
 <!---the big red-->
-<a href="ARC/sm99.html" class="mathbutton sm2"  > super mario 64 </a>
+<a href="ARC/sm98.html" class="mathbutton sm2"  > super mario 64 </a>
 <!----end-->
 
 
