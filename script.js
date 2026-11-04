@@ -376,7 +376,7 @@ meatboy: { url: "ARC/meatboy.html", text: "packing meat " },
 trump: { url: "ARC/trump.html", text: "fight trump because yeah" },
 sans: { url: "ARC/sans.html", text: "sans 1v1" },
 valley: { url: "ARC/hussvalley2.html", text: "run" },
-
+rocket: { url: "ARC/rocket.html", text: "rocket league" },
 
 
     // Mobile buttons
