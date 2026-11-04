@@ -75,14 +75,46 @@ lessons. These include, Math, English, History, and Science.</h3>
 
 </div>
 
-
 </div>
 <!-- TOOLS VVVVV -->
 <h1 align="center">TOOLS™</h1>
 
+
+
+
+
 <div class="row-seperator">
 
-<a href="TOOLS/LF.html" class="mathbutton"  > Pr0xy</a>
+<div class="proxy-menu-launcher">
+  <button type="button" class="mathbutton" id="proxyMenuToggle" aria-haspopup="dialog" aria-expanded="false" aria-controls="proxyMenu">Lesson Finder 𝙥𝗿oxy apps</button>
+  <div class="proxy-menu" id="proxyMenu" role="dialog" aria-label="Pr𝗢xy links" hidden>
+    <div class="proxy-menu-header">
+      <span>Lesson Finder 𝙥𝗿oxy apps</span>
+      <button type="button" class="proxy-menu-close" id="proxyMenuClose" aria-label="Close Pr0xy menu">×</button>
+    </div>
+    <div class="proxy-menu-grid">
+      <a href="TOOLS/sites/gfn.html" class="proxy-menu-item"><img src="lfimg/gfn.png" alt=""><span>Geforce Now</span></a>
+      <a href="404.html" class="proxy-menu-item"><img src="placeholder.png" alt=""><span>placeholder</span></a>
+      <a href="404.html" class="proxy-menu-item"><img src="placeholder.png" alt=""><span>placeholder</span></a>
+      <a href="404.html" class="proxy-menu-item"><img src="placeholder.png" alt=""><span>placeholder</span></a>
+      <a href="404.html" class="proxy-menu-item"><img src="placeholder.png" alt=""><span>placeholder</span></a>
+      <a href="404.html" class="proxy-menu-item"><img src="placeholder.png" alt=""><span>placeholder</span></a>
+      <a href="404.html" class="proxy-menu-item"><img src="placeholder.png" alt=""><span>placeholder</span></a>
+      <a href="404.html" class="proxy-menu-item"><img src="placeholder.png" alt=""><span>placeholder</span></a>
+      <a href="404.html" class="proxy-menu-item"><img src="placeholder.png" alt=""><span>placeholder</span></a>
+    </div>
+  </div>
+</div>
+
+
+
+<!--Rest of tools  below-->
+
+
+
+
+
+
 
 <a href="TOOLS/sharelessonsaboutela.html" class="mathbutton"  > snap chat </a>
 
@@ -131,6 +163,63 @@ lessons. These include, Math, English, History, and Science.</h3>
 
 </div>
 
+
+
+
+<script>
+(() => {
+  const toggle = document.getElementById("proxyMenuToggle");
+  const menu = document.getElementById("proxyMenu");
+  const close = document.getElementById("proxyMenuClose");
+
+  function positionMenu() {
+    if (menu.hidden) return;
+
+    const triggerRect = toggle.getBoundingClientRect();
+    const menuRect = menu.getBoundingClientRect();
+    const left = Math.min(
+      Math.max(8, triggerRect.left + (triggerRect.width - menuRect.width) / 2),
+      window.innerWidth - menuRect.width - 8
+    );
+
+    menu.style.left = `${left}px`;
+    menu.style.top = `${Math.max(8, triggerRect.top - menuRect.height - 8)}px`;
+  }
+
+  function closeMenu(restoreFocus = true) {
+    menu.hidden = true;
+    toggle.setAttribute("aria-expanded", "false");
+    if (restoreFocus) toggle.focus();
+  }
+
+  toggle.addEventListener("click", () => {
+    if (!menu.hidden) {
+      closeMenu(false);
+      return;
+    }
+
+    menu.hidden = false;
+    toggle.setAttribute("aria-expanded", "true");
+    positionMenu();
+    close.focus();
+  });
+
+  close.addEventListener("click", () => closeMenu());
+  window.addEventListener("resize", positionMenu);
+  window.addEventListener("scroll", positionMenu, true);
+
+  document.addEventListener("pointerdown", (event) => {
+    if (!menu.hidden && !menu.contains(event.target) && !toggle.contains(event.target)) {
+      closeMenu(false);
+    }
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && !menu.hidden) closeMenu();
+  });
+})();
+</script>
+
 <script> 
 
 function playSound() {
@@ -143,10 +232,20 @@ function openLog() {
 }
 </script>
 
+
+
+
+
 <hr class="line">
 
 
 <!-----COPY AND PASTE THIS CODE------<a href="dta.html" class="mathbutton">solve for y, (DTA)</a>------change href= to the html page (not game) change name of button, example solve for y, (dta)--->
+
+
+
+
+
+
 
 
 
