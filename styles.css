@@ -183,6 +183,17 @@ body{
     grid-column: span 2;
 }
 
+
+.proxy-menu-item img {
+    /* keep the existing styles */
+    transition: transform 0.2s ease;
+}
+
+.proxy-menu-item:hover img {
+    transform: scale(1.05);
+}
+
+
 .proxy-menu-launcher > .mathbutton {
     max-width: none;
     height: 40px;
