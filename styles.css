@@ -211,6 +211,51 @@ body{
     }
 }
 
+
+
+
+
+
+
+
+
+
+
+.large-lesson-buttons {
+    grid-template-columns: repeat(auto-fill, minmax(min(225px, 100%), 1fr));
+}
+
+.large-lesson-buttons .mathbutton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    max-width: 600px;
+    height: auto;
+    min-height: 45px;
+    padding: 2px;
+    line-height: normal;
+    font-size: 16px;
+    white-space: normal;
+    overflow-wrap: anywhere;
+}
+
+.large-lesson-buttons .proxy-menu-launcher {
+    max-width: 600px;
+}
+
+.large-lesson-buttons .proxy-menu-launcher > .mathbutton {
+    max-width: none;
+}
+
+
+
+
+
+
+
+
+
+
 .proxy-menu {
     position: fixed;
     z-index: 10001;

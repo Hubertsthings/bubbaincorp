@@ -306,8 +306,9 @@ swords: { url: "PC/sword.html", text: "sw0rds f1ghting " },
 "stick2": { url: "PC/complex.html", text: "fleeing the complex" },
 "stick3": { url: "PC/ship.html", text: "escaping the airship" },
 "stick4": { url: "PC/steal.html", text: "stealing the diamond" },
-
-
+"skate3": { url: "PC/skate3.html", text: " skate rn" },
+"iceb": { url: "PC/iceb.html", text: "af" }, 
+"capu": { url: "PC/capu.html", text: "be a monkey" }, 
 
 
 
@@ -377,6 +378,17 @@ trump: { url: "ARC/trump.html", text: "fight trump because yeah" },
 sans: { url: "ARC/sans.html", text: "sans 1v1" },
 valley: { url: "ARC/hussvalley2.html", text: "run" },
 rocket: { url: "ARC/rocket.html", text: "rocket league" },
+soccerman: { url: "ARC/soccerman.html", text: "be a soccer/football manager" },
+drs: { url: "ARC/drs.html", text: "drive in csgo" },
+
+
+
+
+
+
+
+
+
 
 
     // Mobile buttons
@@ -428,6 +440,13 @@ among: { url: "MOBILE/amongsus.html", text: "find bad person" },
 yohoho: { url: "MOBILE/yohoho.html", text: "be a pirate" },
 gbase: { url: "MOBILE/gbase.html", text: "google baseball" },
 bounce: { url: "MOBILE/bounce.html", text: "bounce rn" },
+jup: { url: "MOBILE/jup.html", text: "johnny upgrade. little broken" },
+capc: { url: "MOBILE/capc.html", text: "you must do the captchas " },
+
+
+
+
+
 
   };
 
