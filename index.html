@@ -283,7 +283,34 @@ function openLog() {
 
 <h1 align="center">PC LESSONS™</h1>
 
-<div class="row-seperator large-lesson-buttons">
+<div class="pc-lesson-search">
+  <button
+    type="button"
+    class="pc-lesson-search-toggle"
+    id="pcLessonSearchToggle"
+    aria-label="Search all lessons"
+    aria-expanded="false"
+    aria-controls="pcLessonSearchPanel"
+  >
+    <svg aria-hidden="true" viewBox="0 0 24 24">
+      <circle cx="10.8" cy="10.8" r="6.8"></circle>
+      <path d="m16 16 5 5"></path>
+    </svg>
+  </button>
+  <div class="pc-lesson-search-panel" id="pcLessonSearchPanel" role="search" hidden>
+    <label class="visually-hidden" for="pcLessonSearchInput">Search all lessons</label>
+    <input
+      type="search"
+      id="pcLessonSearchInput"
+      placeholder="Search all lessons..."
+      autocomplete="off"
+    >
+    <button type="button" class="pc-lesson-search-close" id="pcLessonSearchClose" aria-label="Close lesson search">×</button>
+  </div>
+  <p class="pc-lesson-search-status" id="pcLessonSearchStatus" aria-live="polite"></p>
+</div>
+
+<div class="row-seperator large-lesson-buttons lesson-list">
 
 <!----dta-->
 <a href="PORTS.html" class="mathbutton" style="color:rgb(241, 0, 0);"> actual pc ports</a>
@@ -399,7 +426,7 @@ function openLog() {
 
 
 <!--kid1--->
-<a href="PC/kidgarden1.html" class="mathbutton kid1"   > kindergarten 1  </a> <!--broken-->
+<a href="PC/kidgarden1.html" class="mathbutton kid1"   > kindergarten 1  </a> 
 <!-------end-->
 
 
@@ -458,12 +485,12 @@ function openLog() {
 
 
 <!--hus--->
-<a href="PC/hustle.html" class="mathbutton hus"  > yourOnlyMoveIs2Hustle </a>
+<a href="PC/hustle.html" class="mathbutton hus"  > your Only Move Is to Hustle </a>
 <!-------end-->
 
 
 <!--hus--->
-<a href="PC/epsinedu.html" class="mathbutton bige"  > epstein basic in edu </a>
+<a href="PC/epsinedu.html" class="mathbutton bige"  > epstein basic in education </a>
 <!-------end-->
 
 <!--hus--->
@@ -471,7 +498,7 @@ function openLog() {
 <!-------end-->
 
 <!--hus--->
-<a href="PC2/hkss.html" class="mathbutton hkss"  > Hollow knight:ss </a>
+<a href="PC2/hkss.html" class="mathbutton hkss"  > Hollow knight:silk song </a>
 <!-------end-->
 
 
@@ -705,9 +732,63 @@ function openLog() {
 
 
 
-
-
+<!---SEARCH BAR CODE---->
 </div>
+<script>
+(() => {
+  document.addEventListener("DOMContentLoaded", () => {
+    const toggle = document.getElementById("pcLessonSearchToggle");
+    const panel = document.getElementById("pcLessonSearchPanel");
+    const input = document.getElementById("pcLessonSearchInput");
+    const close = document.getElementById("pcLessonSearchClose");
+    const status = document.getElementById("pcLessonSearchStatus");
+    const lessons = Array.from(document.querySelectorAll(".lesson-list a.mathbutton"));
+
+    function updateSearch() {
+      const query = input.value.trim().toLocaleLowerCase();
+      let matches = 0;
+
+      lessons.forEach((lesson) => {
+        const isMatch = query !== "" && lesson.textContent.toLocaleLowerCase().includes(query);
+        lesson.classList.toggle("lesson-search-match", isMatch);
+        lesson.classList.toggle("lesson-search-dimmed", query !== "" && !isMatch);
+        if (isMatch) matches += 1;
+      });
+
+      status.textContent = query && matches === 0
+        ? "No matching. Request one"
+        : query
+          ? `${matches} matching lesson${matches === 1 ? "" : "s"}.`
+          : "";
+    }
+
+    function closeSearch() {
+      panel.hidden = true;
+      toggle.setAttribute("aria-expanded", "false");
+      input.value = "";
+      updateSearch();
+      toggle.focus();
+    }
+
+    toggle.addEventListener("click", () => {
+      panel.hidden = false;
+      toggle.setAttribute("aria-expanded", "true");
+      input.focus();
+    });
+
+    input.addEventListener("input", updateSearch);
+    close.addEventListener("click", closeSearch);
+    input.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") closeSearch();
+    });
+  });
+})();
+</script>
+<!---SEARCH BAR CODE END--->
+
+
+
+
 
 
 <!----ARC%DE THINGS--ARC%DE THINGS---ARC%DE THINGS------ARC%DE THINGS-----ARC%DE THINGS---->
@@ -715,7 +796,7 @@ function openLog() {
 <hr class="line">
 <h1 align="center">ARÇADE LESSONS™ </h1>
 
-<div class="row-seperator large-lesson-buttons">
+<div class="row-seperator large-lesson-buttons lesson-list">
 
 
 
@@ -725,7 +806,7 @@ function openLog() {
 
 
 <!----FNAE-->
-<a href="ARC/FNAE.html" class="mathbutton FNAE"   >Five nights @ epstein</a>
+<a href="ARC/FNAE.html" class="mathbutton FNAE"   >Five nights at epstein</a>
 <!----end-->
 
 
@@ -751,7 +832,7 @@ function openLog() {
 <!----end-->
 
 <!---india sim trucking -->
-<a href="ARC/tsim3.html" class="mathbutton tsimi"  >india truck sim</a>
+<a href="ARC/tsim3.html" class="mathbutton tsimi"  >india truck simulator</a>
 <!----end-->
 
 
@@ -1046,7 +1127,7 @@ function openLog() {
 <hr class="line">
 <h1 align="center">MOBILE LESSONS™ </h1>
 
-<div class="row-seperator large-lesson-buttons">
+<div class="row-seperator large-lesson-buttons lesson-list">
 
 <!----button for mad dr1ve-->
 
