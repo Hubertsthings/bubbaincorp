@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<meta charset="UTF-8">
+
+<link rel="stylesheet" href="/styles.css">
+
+<title>Lessons Online k-12</title>
+
+<link rel="icon" type="images/png" href="/images/favicon.png">
+
+<meta name="description" content="Bubba Inc™ provides a wide selection of educational 
+lessons. These include, Algebra, English, Government, and Science.">
+
+
+
+</head>
+<body>
+
+<!-- launch navbar -->
+<div id="navbar-container"></div>
+<script>
+  // Make sure path is correct relative to this page
+  fetch("/navbar.html")  
+    .then(response => response.text())
+    .then(data => {
+      document.getElementById("navbar-container").innerHTML = data;
+    })
+    .catch(err => console.error("Navbar failed to load:", err));
+
+
+
+    function loadNavbar() {
+  fetch("/navbar.html")
+    .then(res => res.text())
+    .then(data => {
+      document.getElementById("navbar-container").innerHTML = data;
+      initNavbarDropdown();
+    });
+}
+
+document.addEventListener("DOMContentLoaded", loadNavbar);
+
+</script>
+
+<script src="/script.js"></script>
+
+<script src="/panickey.js"></script>
+<!-- end of nav bar and stuff-->
+
+
+
+
+
+
+
+
+<!-- replace EXAMPLE.HTML with app in 'Apps' folder -->
+
+<iframe 
+src="https://us.anyproxy.site/r/aHR0cHM6Ly93d3cuZHVja2R1Y2tnby5jb20v?sig=Bu10nAtjqK1xWq3EX_scYRoyiLrtEXwEmNeo_1AdEeU&sid=d500712d4c9f4424baaf5eed7d88d0b5&exp=1794108288&bid=2af8f1ef9c7f41acb3f63d5386439e78"
+class="lesson-frame"
+allowfullscreen>
+</iframe>
+
+</body>
+</html> 
