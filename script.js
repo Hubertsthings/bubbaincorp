@@ -309,6 +309,9 @@ swords: { url: "PC/sword.html", text: "sw0rds f1ghting " },
 "skate3": { url: "PC/skate3.html", text: " skate rn" },
 "iceb": { url: "PC/iceb.html", text: "af" }, 
 "capu": { url: "PC/capu.html", text: "be a monkey" }, 
+"stew": { url: "PC/stew.html", text: "be a farmer in kansas" },
+
+
 
 
 
