@@ -1,55 +1,377 @@
-<!doctype html>
+
+<!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <base href="https://cdn.jsdelivr.net/gh/bubbls/youtube-playables@main/chess-classic/">
-    <meta charset="UTF-8" />
-    <meta name="viewport"
-        content="width=device-width,height=device-height,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover" />
-    <title>Chess Classic</title>
-    <link rel="stylesheet" href="assets/css/styles.css" nonce="l8W__iZ7xgOF2sxYxPrsbQ">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Chess Game</title>
 
-    <script src="https://cdn.jsdelivr.net/gh/bubbls/youtube-playables@main/ytgame.js" nonce="l8W__iZ7xgOF2sxYxPrsbQ"></script>
-    <script nonce="l8W__iZ7xgOF2sxYxPrsbQ">ytgame.game.firstFrameReady();</script>
+<!-- Chess rules engine -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
 
-    <!-- ---------------- API Snippet ---------------- -->
-    <script nonce="l8W__iZ7xgOF2sxYxPrsbQ">
-        window.famobi_gameID = "chess-classic"; // the actual GAMEID is added to the final version by Famobi
-        window.famobi_gameJS = [
-            "vendors.bundle.js",
-            "main.bundle.js"
-        ];
-        (function (document, url, fgJS, firstJS) {
-            fgJS = document.createElement('script');
-            firstJS = document.getElementsByTagName('script')[0];
-            fgJS.src = url + "";
-            firstJS.parentNode.insertBefore(fgJS, firstJS);
-        })(document, 'html5games/gameapi/v1.js');         
-    </script>
+<style>
+* {
+    box-sizing: border-box;
+}
 
-    <!-- ---------------- API Snippet end ------------- -->
-    
+body {
+    margin: 0;
+    min-height: 100vh;
+    background: #171a21;
+    color: white;
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 25px;
+}
+
+.container {
+    width: 100%;
+    max-width: 650px;
+    text-align: center;
+}
+
+h1 {
+    font-size: 36px;
+    margin-bottom: 10px;
+}
+
+#status {
+    background: #252b36;
+    padding: 15px;
+    border-radius: 10px;
+    margin: 20px 0;
+    font-size: 18px;
+}
+
+.board {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    width: 100%;
+    border: 5px solid #38332d;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.square {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: clamp(25px, 8vw, 55px);
+    cursor: pointer;
+    position: relative;
+    user-select: none;
+}
+
+.light {
+    background: #f0d9b5;
+}
+
+.dark {
+    background: #b58863;
+}
+
+.selected {
+    background: #f6f669 !important;
+}
+
+.possible::after {
+    content: "";
+    width: 25%;
+    height: 25%;
+    border-radius: 50%;
+    background: rgba(30, 100, 40, 0.65);
+    position: absolute;
+}
+
+.possible.capture::after {
+    width: 85%;
+    height: 85%;
+    background: transparent;
+    border: 5px solid rgba(30, 100, 40, 0.65);
+}
+
+.white-piece {
+    color: #fff;
+    text-shadow: 1px 2px 2px #333;
+}
+
+.black-piece {
+    color: #151515;
+    text-shadow: 1px 1px 1px #777;
+}
+
+.controls {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 20px;
+}
+
+button {
+    background: #3978d5;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 7px;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #245ba8;
+}
+
+#moves {
+    margin-top: 20px;
+    background: #252b36;
+    padding: 15px;
+    border-radius: 10px;
+    text-align: left;
+    min-height: 50px;
+    max-height: 130px;
+    overflow-y: auto;
+    line-height: 1.7;
+}
+
+@media (max-width: 450px) {
+    body { padding: 10px; }
+}
+</style>
 </head>
 
 <body>
-    <div id="preloader">
-        <div id="loading-text"></div>
-        <div class="lds-default">
-            <div></div>
-            <div></div>
-            <div></div>
-            <div></div>
-            <div></div>
-            <div></div>
-            <div></div>
-            <div></div>
-            <div></div>
-            <div></div>
-            <div></div>
-            <div></div>
-        </div>
-    </div>
-    <div id="game-container"></div>
-</body>
 
+<div class="container">
+
+    <h1>♟ Chess ♟</h1>
+
+    <div id="status">White's turn</div>
+
+    <div id="board" class="board"></div>
+
+    <div class="controls">
+        <button onclick="undoMove()">↩ Undo</button>
+        <button onclick="restartGame()">↻ Restart</button>
+        <button onclick="flipBoard()">⇅ Flip Board</button>
+    </div>
+
+    <div id="moves">
+        <strong>Move History</strong>
+        <div id="history">No moves yet.</div>
+    </div>
+
+</div>
+
+<script>
+const game = new Chess();
+
+const board = document.getElementById("board");
+const status = document.getElementById("status");
+const history = document.getElementById("history");
+
+let selectedSquare = null;
+let possibleMoves = [];
+let flipped = false;
+
+const pieces = {
+    wk: "♔", wq: "♕", wr: "♖",
+    wb: "♗", wn: "♘", wp: "♙",
+
+    bk: "♚", bq: "♛", br: "♜",
+    bb: "♝", bn: "♞", bp: "♟"
+};
+
+function renderBoard() {
+    board.innerHTML = "";
+
+    const files = flipped
+        ? ["h","g","f","e","d","c","b","a"]
+        : ["a","b","c","d","e","f","g","h"];
+
+    const ranks = flipped
+        ? [1,2,3,4,5,6,7,8]
+        : [8,7,6,5,4,3,2,1];
+
+    for (let rank of ranks) {
+        for (let file of files) {
+            const squareName = file + rank;
+            const piece = game.get(squareName);
+
+            const square = document.createElement("div");
+
+            const fileIndex = file.charCodeAt(0) - 97;
+
+            square.className =
+                "square " +
+                ((fileIndex + rank) % 2 === 0 ? "light" : "dark");
+
+            if (selectedSquare === squareName) {
+                square.classList.add("selected");
+            }
+
+            const move = possibleMoves.find(
+                m => m.to === squareName
+            );
+
+            if (move) {
+                square.classList.add("possible");
+
+                if (piece) {
+                    square.classList.add("capture");
+                }
+            }
+
+            if (piece) {
+                const color = piece.color === "w" ? "white" : "black";
+                square.innerHTML =
+                    `<span class="${color}-piece">${
+                        pieces[piece.color + piece.type]
+                    }</span>`;
+            }
+
+            square.addEventListener("click", () => {
+                handleClick(squareName);
+            });
+
+            board.appendChild(square);
+        }
+    }
+
+    updateStatus();
+    updateHistory();
+}
+
+function handleClick(square) {
+    if (game.isGameOver()) return;
+
+    const piece = game.get(square);
+
+    // Select a piece belonging to the current player
+    if (!selectedSquare) {
+        if (piece && piece.color === game.turn()) {
+            selectPiece(square);
+        }
+        return;
+    }
+
+    // Switch selection to another friendly piece
+    if (piece && piece.color === game.turn()) {
+        selectPiece(square);
+        return;
+    }
+
+    // Attempt a move
+    const move = possibleMoves.find(m => m.to === square);
+
+    if (move) {
+        let promotion = "q";
+
+        if (move.flags.includes("p")) {
+            promotion = prompt(
+                "Promote pawn to: q (Queen), r (Rook), b (Bishop), n (Knight)",
+                "q"
+            );
+
+            if (!["q", "r", "b", "n"].includes(promotion)) {
+                promotion = "q";
+            }
+        }
+
+        try {
+            game.move({
+                from: selectedSquare,
+                to: square,
+                promotion: promotion
+            });
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    selectedSquare = null;
+    possibleMoves = [];
+    renderBoard();
+}
+
+function selectPiece(square) {
+    selectedSquare = square;
+
+    possibleMoves = game.moves({
+        square: square,
+        verbose: true
+    });
+
+    renderBoard();
+}
+
+function updateStatus() {
+    if (game.isCheckmate()) {
+        status.textContent =
+            "CHECKMATE! " +
+            (game.turn() === "w" ? "Black" : "White") +
+            " wins!";
+    } else if (game.isDraw()) {
+        status.textContent = "Draw!";
+    } else if (game.isCheck()) {
+        status.textContent =
+            (game.turn() === "w" ? "White" : "Black") +
+            " is in CHECK!";
+    } else {
+        status.textContent =
+            (game.turn() === "w" ? "White" : "Black") +
+            "'s turn";
+    }
+}
+
+function updateHistory() {
+    const moves = game.history();
+
+    if (moves.length === 0) {
+        history.textContent = "No moves yet.";
+        return;
+    }
+
+    let output = "";
+
+    for (let i = 0; i < moves.length; i += 2) {
+        output +=
+            `<div>${Math.floor(i / 2) + 1}. ` +
+            moves[i] + " " +
+            (moves[i + 1] || "") +
+            "</div>";
+    }
+
+    history.innerHTML = output;
+}
+
+function undoMove() {
+    game.undo();
+    selectedSquare = null;
+    possibleMoves = [];
+    renderBoard();
+}
+
+function restartGame() {
+    game.reset();
+    selectedSquare = null;
+    possibleMoves = [];
+    flipped = false;
+    renderBoard();
+}
+
+function flipBoard() {
+    flipped = !flipped;
+    selectedSquare = null;
+    possibleMoves = [];
+    renderBoard();
+}
+
+renderBoard();
+</script>
+
+</body>
 </html>
