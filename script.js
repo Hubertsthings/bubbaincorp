@@ -383,7 +383,7 @@ valley: { url: "ARC/hussvalley2.html", text: "run" },
 rocket: { url: "ARC/rocket.html", text: "rocket league" },
 soccerman: { url: "ARC/soccerman.html", text: "be a soccer/football manager" },
 drs: { url: "ARC/drs.html", text: "drive in csgo" },
-
+ches: { url: "ARC/chesss.html", text: "HE SACRIFICES. THE ROOK" },
 
 
 
