@@ -310,7 +310,11 @@ swords: { url: "PC/sword.html", text: "sw0rds f1ghting " },
 "iceb": { url: "PC/iceb.html", text: "af" }, 
 "capu": { url: "PC/capu.html", text: "be a monkey" }, 
 "stew": { url: "PC/stew.html", text: "be a farmer in kansas" },
+<<<<<<< HEAD
 "k2d": { url: "PC/k2d.html", text: "karlson but 2d" },
+=======
+"inda": { url: "PC/indis.html", text: "time to scam" },
+>>>>>>> bab0c1390ec45e4e6240213b6b1ae9ab98ec7585
 
 
 
@@ -383,8 +387,8 @@ valley: { url: "ARC/hussvalley2.html", text: "run" },
 rocket: { url: "ARC/rocket.html", text: "rocket league" },
 soccerman: { url: "ARC/soccerman.html", text: "be a soccer/football manager" },
 drs: { url: "ARC/drs.html", text: "drive in csgo" },
-
-
+ches: { url: "ARC/chesss.html", text: "HE SACRIFICES. THE ROOK" },
+mches: { url: "ARC/mchess.html", text: "HE SACRIFICES. THE ROOK pt2" },
 
 
 
