@@ -310,7 +310,7 @@ swords: { url: "PC/sword.html", text: "sw0rds f1ghting " },
 "iceb": { url: "PC/iceb.html", text: "af" }, 
 "capu": { url: "PC/capu.html", text: "be a monkey" }, 
 "stew": { url: "PC/stew.html", text: "be a farmer in kansas" },
-
+"k2d": { url: "PC/k2d.html", text: "karlson but 2d" },
 
 
 
