@@ -310,11 +310,14 @@ swords: { url: "PC/sword.html", text: "sw0rds f1ghting " },
 "iceb": { url: "PC/iceb.html", text: "af" }, 
 "capu": { url: "PC/capu.html", text: "be a monkey" }, 
 "stew": { url: "PC/stew.html", text: "be a farmer in kansas" },
-<<<<<<< HEAD
-"k2d": { url: "PC/k2d.html", text: "karlson but 2d" },
-=======
 "inda": { url: "PC/indis.html", text: "time to scam" },
->>>>>>> bab0c1390ec45e4e6240213b6b1ae9ab98ec7585
+"karls": { url: "PC/k2d.html", text: "karlson but 2d" },
+"inkg": { url: "PC/inkg.html", text: "ink game" },
+"scm": { url: "PC/scm.html", text: "scrap metal (drive simu)" },
+
+
+
+
 
 
 
@@ -389,7 +392,7 @@ soccerman: { url: "ARC/soccerman.html", text: "be a soccer/football manager" },
 drs: { url: "ARC/drs.html", text: "drive in csgo" },
 ches: { url: "ARC/chesss.html", text: "HE SACRIFICES. THE ROOK" },
 mches: { url: "ARC/mchess.html", text: "HE SACRIFICES. THE ROOK pt2" },
-
+geode: { url: "ARC/geode.html", text: "geo dash port" },
 
 
 
@@ -449,7 +452,7 @@ gbase: { url: "MOBILE/gbase.html", text: "google baseball" },
 bounce: { url: "MOBILE/bounce.html", text: "bounce rn" },
 jup: { url: "MOBILE/jup.html", text: "johnny upgrade. little broken" },
 capc: { url: "MOBILE/capc.html", text: "you must do the captchas " },
-
+ftl: { url: "MOBILE/ftl.html", text: "pessi vs penaldo vs penbapi" },
 
 
 
