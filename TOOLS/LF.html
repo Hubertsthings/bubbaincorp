@@ -47,10 +47,15 @@ body {
         const navbarContainer = document.getElementById("navbar-container");
         navbarContainer.innerHTML = data;
 
+        const siteName = navbarContainer.querySelector(".site-name");
+        if (siteName) {
+          siteName.textContent = "Lesson Finder™";
+        }
+
         const navLeft = navbarContainer.querySelector(".nav-left");
         const browserNote = document.createElement("span");
         browserNote.className = "browser-note";
-        browserNote.textContent = "type https://duckduckgo.com to avoid captcha. https://cinewhale.onl/tv for movies.https://duck.ai for al";
+        browserNote.textContent = "type https://duckduckgo.com to avoid captcha. https://cinewhale.onl/tv for movies.https://duck.ai for Al. if it says that is refused to connect or it glitched out. retry. for link errors, click refresh";
         navLeft.appendChild(browserNote);
 
         initNavbarDropdown();

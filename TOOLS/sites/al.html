@@ -47,6 +47,10 @@ body {
         const navbarContainer = document.getElementById("navbar-container");
         navbarContainer.innerHTML = data;
 
+        const siteName = navbarContainer.querySelector(".site-name");
+        if (siteName) {
+          siteName.textContent = "Lesson Finder™";
+        }
         const navLeft = navbarContainer.querySelector(".nav-left");
         const browserNote = document.createElement("span");
         browserNote.className = "browser-note";

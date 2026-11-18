@@ -218,7 +218,7 @@ function initNavbarButtons() {
   // Preview data object  html and descriptions left 
   const previewData = {
     // PC buttons
-    dta: { url: "Apps/DTA.html", text: "gâ€ @ style app" },
+    dta: { url: "Apps/DTA.html", text: "real" },
     raldi: { url: "PC/RALDI.html", text: "modded version of b@ld1" },
     m: { url: "you will must be the one and only user on the whole world called", text: "press once to get a copy. large file" },
     superh: { url: "PC/suph.html", text: " hit red people" },
@@ -314,8 +314,8 @@ swords: { url: "PC/sword.html", text: "sw0rds f1ghting " },
 "karls": { url: "PC/k2d.html", text: "karlson but 2d" },
 "inkg": { url: "PC/inkg.html", text: "ink game" },
 "scm": { url: "PC/scm.html", text: "scrap metal (drive simu)" },
-
-
+"uzg": { url: "PC/uzg.html", text: "i think thats what it stands for" },
+"manwin": { url: "PC/manwin.html", text: "dont let him touch you" },
 
 
 
@@ -393,7 +393,7 @@ drs: { url: "ARC/drs.html", text: "drive in csgo" },
 ches: { url: "ARC/chesss.html", text: "HE SACRIFICES. THE ROOK" },
 mches: { url: "ARC/mchess.html", text: "HE SACRIFICES. THE ROOK pt2" },
 geode: { url: "ARC/geode.html", text: "geo dash port" },
-
+piz: { url: "ARC/piz.html", text: "pizza in a tower" },
 
 
 
@@ -453,7 +453,7 @@ bounce: { url: "MOBILE/bounce.html", text: "bounce rn" },
 jup: { url: "MOBILE/jup.html", text: "johnny upgrade. little broken" },
 capc: { url: "MOBILE/capc.html", text: "you must do the captchas " },
 ftl: { url: "MOBILE/ftl.html", text: "pessi vs penaldo vs penbapi" },
-
+survio: { url: "MOBILE/survio.html", text: "survive the zombies" },
 
 
 
