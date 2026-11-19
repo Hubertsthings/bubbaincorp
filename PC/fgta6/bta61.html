@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<meta charset="UTF-8">
+
+<link rel="stylesheet" href="/styles.css">
+
+<title>Lessons Online k-12</title>
+
+<link rel="icon" type="images/png" href="/images/favicon.png">
+
+<link rel="preload" as="image" href="/PC/fgta6/madein.png">
+
+<meta name="description" content="Bubba Inc™ provides a wide selection of educational 
+lessons. These include, Algebra, English, Government, and Science.">
+
+<style>
+  #lesson-loading {
+    text-align: center;
+    font-size: 1.5rem;
+  }
+
+  #lesson-intro {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #000;
+    animation: lesson-intro-fade 2s linear forwards;
+  }
+
+  #lesson-intro[hidden] {
+    display: none;
+  }
+
+  #lesson-intro img {
+    width: 100vw;
+    height: 100vh;
+    object-fit: contain;
+  }
+
+  @keyframes lesson-intro-fade {
+    to {
+      opacity: 0;
+    }
+  }
+</style>
+
+
+</head>
+<body>
+
+<!-- launch navbar -->
+<div id="navbar-container"></div>
+<script>
+  // Make sure path is correct relative to this page
+  fetch("/navbar.html")  
+    .then(response => response.text())
+    .then(data => {
+      document.getElementById("navbar-container").innerHTML = data;
+    })
+    .catch(err => console.error("Navbar failed to load:", err));
+
+
+
+    function loadNavbar() {
+  fetch("/navbar.html")
+    .then(res => res.text())
+    .then(data => {
+      document.getElementById("navbar-container").innerHTML = data;
+      initNavbarDropdown();
+    });
+}
+
+document.addEventListener("DOMContentLoaded", loadNavbar);
+
+</script>
+
+<script src="/script.js"></script>
+
+<script src="/panickey.js"></script>
+<!-- end of nav bar and stuff-->
+
+
+
+
+
+
+
+
+<!-- replace EXAMPLE.HTML with app in 'Apps' folder -->
+
+
+<p id="lesson-loading" aria-live="polite">Loading</p>
+
+<div id="lesson-intro" hidden>
+  <img src="/PC/fgta6/madein.png" alt="">
+</div>
+
+<iframe 
+data-src="/Apps/bta61.html"
+class="lesson-frame"
+allowfullscreen
+hidden>
+</iframe>
+
+<script>
+  const loadingText = document.getElementById("lesson-loading");
+  const introImage = document.getElementById("lesson-intro");
+  const lessonFrame = document.querySelector(".lesson-frame");
+  let loadedAssets = 0;
+
+  window.setTimeout(() => {
+    loadingText.textContent = "Loading 0/20 assets";
+
+    const loadingInterval = window.setInterval(() => {
+      loadedAssets += 1;
+      loadingText.textContent = `Loading ${loadedAssets}/20 assets`;
+
+      if (loadedAssets === 20) {
+        window.clearInterval(loadingInterval);
+        loadingText.hidden = true;
+        introImage.hidden = false;
+      }
+    }, 2000);
+  }, 3000);
+
+  introImage.addEventListener("animationend", () => {
+    introImage.hidden = true;
+    lessonFrame.src = lessonFrame.dataset.src;
+    lessonFrame.hidden = false;
+  });
+</script>
+
+</body>
+</html> 

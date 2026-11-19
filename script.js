@@ -316,7 +316,7 @@ swords: { url: "PC/sword.html", text: "sw0rds f1ghting " },
 "scm": { url: "PC/scm.html", text: "scrap metal (drive simu)" },
 "uzg": { url: "PC/uzg.html", text: "i think thats what it stands for" },
 "manwin": { url: "PC/manwin.html", text: "dont let him touch you" },
-
+"bt4": { url: "", text: "grand theft auto 6" },
 
 
 
